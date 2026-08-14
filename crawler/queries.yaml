@@ -1,0 +1,198 @@
+# Crawler configuration
+#
+# Add one search query per GSP resource you want to track. Be specific —
+# exact titles of guides, cheat sheets, or frameworks work far better than
+# generic terms like "OWASP GenAI", which will mostly return noise.
+#
+# Google CSE search operators work here, e.g. quotes for exact phrases,
+# "-word" to exclude, "site:" / "-site:" to include or exclude domains.
+
+# Which search backends to run each query against. Each needs its own API
+# key set as an environment variable (locally) or GitHub Actions secret.
+#   google_cse  -> GOOGLE_CSE_API_KEY, GOOGLE_CSE_CX   (traditional web search)
+#   serpapi     -> SERPAPI_KEY                          (Bing + DuckDuckGo, since
+#                                                         Bing retired its own API)
+#   perplexity  -> PERPLEXITY_API_KEY                   (AI answer engine, cites sources)
+# Comment out any engine you haven't set up yet.
+engines:
+  - google_cse
+  - serpapi
+  - perplexity
+
+# Which SerpAPI sub-engines to query (only used if serpapi is enabled above).
+serpapi_engines:
+  - bing
+  - duckduckgo
+
+# Perplexity model to use (only used if perplexity is enabled above).
+perplexity_model: sonar
+
+results_per_query: 10
+
+# ---------------------------------------------------------------------------
+# Multilingual / multi-region search
+# ---------------------------------------------------------------------------
+# Each entry biases search results toward that language/country using the
+# engines' own locale parameters (Google's lr/gl, SerpAPI's hl/gl). Resource
+# titles are searched as-is (quoted) in every language, since proper nouns
+# like your resource names are usually kept in English even in foreign-
+# language content.
+#
+# Set translate_modifiers: true to also translate a short list of generic
+# terms (below) into each enabled language and OR them into the query — this
+# catches informal/paraphrased mentions, not just exact-title hits. Requires
+# GOOGLE_TRANSLATE_API_KEY (see crawler/SETUP.md).
+#
+# COST WARNING: every enabled language roughly multiplies your total query
+# count (languages × resource titles × engines). Free tiers are small
+# (Google CSE: 100/day, SerpAPI: 100/month). Start with a few languages,
+# check your usage, then expand. Toggle with `enabled: true/false` below.
+
+translate_modifiers: false
+modifier_terms:
+  - presentation
+  - training course
+  - conference session
+  - marketing brochure
+  - article
+
+languages:
+  # --- Baseline ---
+  - { code: en, country: US, region: "English (default)",  label: "English (US)",        enabled: true }
+
+  # --- Europe ---
+  - { code: es, country: ES, region: Europe, label: "Spanish (Spain)",     enabled: true }
+  - { code: fr, country: FR, region: Europe, label: "French",              enabled: true }
+  - { code: de, country: DE, region: Europe, label: "German",              enabled: true }
+  - { code: it, country: IT, region: Europe, label: "Italian",             enabled: false }
+  - { code: pt, country: PT, region: Europe, label: "Portuguese (Portugal)", enabled: false }
+  - { code: nl, country: NL, region: Europe, label: "Dutch",               enabled: false }
+  - { code: pl, country: PL, region: Europe, label: "Polish",              enabled: false }
+  - { code: ru, country: RU, region: Europe, label: "Russian",             enabled: false }
+
+  # --- Japan ---
+  - { code: ja, country: JP, region: Japan, label: "Japanese",             enabled: true }
+
+  # --- China ---
+  - { code: zh-CN, country: CN, region: China, label: "Chinese (Simplified)",  enabled: true }
+  - { code: zh-TW, country: TW, region: China, label: "Chinese (Traditional)", enabled: false }
+
+  # --- India ---
+  - { code: hi, country: IN, region: India, label: "Hindi",                enabled: true }
+  - { code: en, country: IN, region: India, label: "English (India)",      enabled: false }
+
+  # --- South America ---
+  - { code: pt, country: BR, region: "South America", label: "Portuguese (Brazil)",   enabled: true }
+  - { code: es, country: AR, region: "South America", label: "Spanish (Argentina)",   enabled: false }
+  - { code: es, country: MX, region: "South America", label: "Spanish (Mexico)",      enabled: false }
+  - { code: es, country: CO, region: "South America", label: "Spanish (Colombia)",    enabled: false }
+
+  # --- Other Asia ---
+  - { code: ko, country: KR, region: "Other Asia", label: "Korean",     enabled: false }
+  - { code: vi, country: VN, region: "Other Asia", label: "Vietnamese", enabled: false }
+  - { code: th, country: TH, region: "Other Asia", label: "Thai",       enabled: false }
+  - { code: id, country: ID, region: "Other Asia", label: "Indonesian", enabled: false }
+
+# ---------------------------------------------------------------------------
+# Conference & association discovery
+# ---------------------------------------------------------------------------
+# A second, separate search pass: for each resource title, query alongside
+# named conferences, vendor user conferences, training events, and industry
+# associations — e.g. "OWASP Top 10 for LLM Applications" "RSA Conference".
+# This does NOT multiply by the languages list above (conference names are
+# proper nouns, same logic as resource titles) — it's a flat
+# titles × conference-names × engines pass, controlled separately here.
+#
+# COST WARNING: with the defaults below (~35 names) this is roughly 35×
+# your resource title count, per engine enabled. Trim the lists or disable
+# categories you don't care about before turning this on for a long query
+# list. `conference_engines` defaults to just google_cse to keep this cheap;
+# add serpapi/perplexity deliberately once you've checked quota.
+
+conference_search:
+  enabled: true
+  engines:
+    - google_cse
+  results_per_query: 10
+
+  categories:
+    cybersecurity_conferences:
+      enabled: true
+      default_type: "Conference session"
+      names:
+        - "RSA Conference"
+        - "Black Hat"
+        - "DEF CON"
+        - "BSides"
+        - "Infosecurity Europe"
+        - "OWASP AppSec"
+        - "Gartner Security & Risk Management Summit"
+        - "ShmooCon"
+        - "CactusCon"
+
+    ai_conferences:
+      enabled: true
+      default_type: "Conference session"
+      names:
+        - "NeurIPS"
+        - "ICML"
+        - "AI Village DEF CON"
+        - "Applied Machine Learning Days"
+        - "Gartner Data & Analytics Summit"
+        - "O'Reilly AI Conference"
+
+    vendor_user_conferences:
+      enabled: true
+      default_type: "Conference session"
+      names:
+        - "AWS re:Inforce"
+        - "AWS re:Invent"
+        - "Microsoft Ignite"
+        - "Google Cloud Next"
+        - "Cisco Live"
+        - "Splunk .conf"
+        - "Salesforce Dreamforce"
+        - "ServiceNow Knowledge"
+        - "Palo Alto Networks Ignite"
+        - "CrowdStrike Fal.Con"
+
+    training_conferences:
+      enabled: true
+      default_type: "Training class"
+      names:
+        - "SANS Training"
+        - "ISC2 Security Congress"
+        - "ISACA Training Week"
+        - "Black Hat Training"
+
+    industry_associations:
+      enabled: true
+      default_type: "Conference session"
+      names:
+        - "ISACA"
+        - "ISC2"
+        - "Cloud Security Alliance"
+        - "IAPP"
+        - "IEEE Security and Privacy"
+        - "ACM CCS"
+
+queries:
+  - "\"OWASP Top 10 for LLM Applications\" -site:owasp.org"
+  - "\"OWASP GenAI Security Project\" presentation"
+  - "\"OWASP LLM Top 10\" slides"
+  - "\"OWASP AI Security\" whitepaper"
+  # Add more resource-specific titles below, e.g.:
+  # - "\"GenAI Red Teaming Guide\" OWASP"
+  # - "\"Agentic AI Threats and Mitigations\" OWASP"
+
+# Domains to always ignore (official channels + noisy aggregators).
+# Matches the domain itself and any subdomain.
+excluded_domains:
+  - genai.owasp.org
+  - owasp.org
+  - youtube.com
+  - youtu.be
+  - linkedin.com
+  - twitter.com
+  - x.com
+  - facebook.com

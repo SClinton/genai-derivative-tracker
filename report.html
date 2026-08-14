@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GSP Derivative Works — Reporting</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="wrap">
+
+  <header class="masthead">
+    <div class="masthead-top">
+      <span class="case-label">Provenance Tracking &middot; Open Source Reuse</span>
+      <span class="case-label" id="rangeLabel"></span>
+    </div>
+    <h1>Reporting</h1>
+    <div class="subtitle">Mentions by channel, over any date range, with source links.</div>
+    <nav class="masthead-nav">
+      <a href="index.html">Ledger</a>
+      <a href="report.html" class="active">Reporting</a>
+    </nav>
+  </header>
+
+  <div class="date-range">
+    <div class="field">
+      <label for="dateFrom">From</label>
+      <input type="date" id="dateFrom">
+    </div>
+    <div class="field">
+      <label for="dateTo">To</label>
+      <input type="date" id="dateTo">
+    </div>
+    <div class="presets">
+      <button class="btn secondary" data-preset="30">Last 30 days</button>
+      <button class="btn secondary" data-preset="90">Last 90 days</button>
+      <button class="btn secondary" data-preset="year">This year</button>
+      <button class="btn secondary" data-preset="all">All time</button>
+    </div>
+  </div>
+
+  <div class="tallies" id="tallies"></div>
+
+  <h2 class="section">Mentions per channel</h2>
+  <div class="channel-report" id="channelReport"></div>
+
+  <h2 class="section">Mentions in range</h2>
+  <div class="count-line" id="tableCountLine"></div>
+  <div class="report-table-wrap">
+    <table class="report-table" id="reportTable">
+      <thead>
+        <tr>
+          <th data-key="title">Title</th>
+          <th data-key="type">Channel</th>
+          <th data-key="org">Company / individual</th>
+          <th data-key="date">Date observed</th>
+          <th data-key="attr">Attribution</th>
+          <th data-key="link">Source</th>
+        </tr>
+      </thead>
+      <tbody id="reportTableBody"></tbody>
+    </table>
+  </div>
+
+  <footer class="util">
+    <span>Reads the same ledger data as the main page (stored locally in this browser).</span>
+    <a href="index.html">&larr; Back to ledger</a>
+  </footer>
+
+</div>
+
+<script>
+(function(){
+  const STORAGE_KEY = 'gsp-derivative-ledger-v1';
+
+  function load(){
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : [];
+    }catch(e){ return []; }
+  }
+
+  const entries = load();
+
+  function escapeHtml(s){
+    return (s||'').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  }
+  function attrLabel(v){
+    return { attributed: 'Attributed', unclear: 'Unclear', unattributed: 'Not attributed' }[v] || v || '—';
+  }
+  function fmtDate(d){
+    if(!d) return '—';
+    const dt = new Date(d + 'T00:00:00');
+    if(isNaN(dt)) return d;
+    return dt.toLocaleDateString(undefined, { year:'numeric', month:'short', day:'numeric' });
+  }
+  function todayStr(){
+    return new Date().toISOString().slice(0,10);
+  }
+  function daysAgoStr(n){
+    const d = new Date();
+    d.setDate(d.getDate() - n);
+    return d.toISOString().slice(0,10);
+  }
+
+  const fromInput = document.getElementById('dateFrom');
+  const toInput = document.getElementById('dateTo');
+
+  // Default range: earliest entry date (or 90 days back) through today.
+  const datedEntries = entries.filter(e => e.date);
+  const earliest = datedEntries.length
+    ? datedEntries.reduce((a,b) => (a.date < b.date ? a : b)).date
+    : daysAgoStr(90);
+  fromInput.value = earliest;
+  toInput.value = todayStr();
+
+  document.querySelectorAll('.presets button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const preset = btn.dataset.preset;
+      const today = todayStr();
+      if(preset === '30'){ fromInput.value = daysAgoStr(30); toInput.value = today; }
+      else if(preset === '90'){ fromInput.value = daysAgoStr(90); toInput.value = today; }
+      else if(preset === 'year'){ fromInput.value = today.slice(0,4) + '-01-01'; toInput.value = today; }
+      else if(preset === 'all'){ fromInput.value = earliest < today ? (datedEntries.length ? earliest : '2020-01-01') : '2020-01-01'; toInput.value = today; }
+      renderAll();
+    });
+  });
+  fromInput.addEventListener('change', renderAll);
+  toInput.addEventListener('change', renderAll);
+
+  function inRange(entry){
+    if(!entry.date) return false; // undated entries can't be placed in a range
+    const from = fromInput.value;
+    const to = toInput.value;
+    if(from && entry.date < from) return false;
+    if(to && entry.date > to) return false;
+    return true;
+  }
+
+  let sortKey = 'date';
+  let sortDir = 'desc';
+
+  function renderTallies(filtered){
+    const total = filtered.length;
+    const byAttr = { attributed:0, unclear:0, unattributed:0 };
+    filtered.forEach(e => { byAttr[e.attr] = (byAttr[e.attr]||0) + 1; });
+    const undated = entries.length - datedEntries.length;
+
+    const tallies = [
+      { n: total, l: 'Mentions in range' },
+      { n: byAttr.unattributed || 0, l: 'Not attributed' },
+      { n: byAttr.attributed || 0, l: 'Attributed' },
+      { n: undated, l: 'Undated (excluded)' },
+    ];
+    document.getElementById('tallies').innerHTML = tallies.map(t => `
+      <div class="tally"><div class="n">${t.n}</div><div class="l">${t.l}</div></div>
+    `).join('');
+  }
+
+  function renderChannelReport(filtered){
+    const counts = {};
+    filtered.forEach(e => {
+      const ch = e.type || 'Other';
+      counts[ch] = (counts[ch] || 0) + 1;
+    });
+    const rows = Object.entries(counts).sort((a,b) => b[1]-a[1]);
+    const max = rows.length ? rows[0][1] : 0;
+    const container = document.getElementById('channelReport');
+
+    if(rows.length === 0){
+      container.innerHTML = `<div class="empty">No mentions with a date in this range.</div>`;
+      return;
+    }
+    container.innerHTML = rows.map(([channel, n]) => `
+      <div class="channel-row">
+        <div class="channel-name">${escapeHtml(channel)}</div>
+        <div class="channel-bar-track"><div class="channel-bar-fill" style="width:${max ? (n/max*100) : 0}%"></div></div>
+        <div class="channel-count">${n}</div>
+      </div>
+    `).join('');
+  }
+
+  function renderTable(filtered){
+    const sorted = [...filtered].sort((a,b) => {
+      let av = a[sortKey] || '';
+      let bv = b[sortKey] || '';
+      if(sortKey === 'date'){ av = a.date || ''; bv = b.date || ''; }
+      const cmp = String(av).localeCompare(String(bv), undefined, { sensitivity: 'base' });
+      return sortDir === 'asc' ? cmp : -cmp;
+    });
+
+    document.getElementById('tableCountLine').textContent =
+      `${sorted.length} mention${sorted.length === 1 ? '' : 's'} in range`;
+
+    const tbody = document.getElementById('reportTableBody');
+    if(sorted.length === 0){
+      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--ink-soft); padding:24px;">No mentions in this date range.</td></tr>`;
+    } else {
+      tbody.innerHTML = sorted.map(e => `
+        <tr>
+          <td class="title-cell">${escapeHtml(e.title) || '(untitled)'}</td>
+          <td><span class="type-tag">${escapeHtml(e.type) || '—'}</span></td>
+          <td>${escapeHtml(e.org) || '—'}</td>
+          <td>${fmtDate(e.date)}</td>
+          <td><span class="stamp ${e.attr}">${attrLabel(e.attr)}</span></td>
+          <td class="link-cell">${e.link ? `<a href="${escapeHtml(e.link)}" target="_blank" rel="noopener">Open source &rarr;</a>` : '—'}</td>
+        </tr>
+      `).join('');
+    }
+
+    document.querySelectorAll('#reportTable th').forEach(th => {
+      th.classList.toggle('sorted', th.dataset.key === sortKey);
+      th.dataset.dir = sortDir === 'asc' ? '▲' : '▼';
+    });
+  }
+
+  document.querySelectorAll('#reportTable th').forEach(th => {
+    th.addEventListener('click', () => {
+      const key = th.dataset.key;
+      if(sortKey === key){
+        sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+      } else {
+        sortKey = key;
+        sortDir = key === 'date' ? 'desc' : 'asc';
+      }
+      renderAll();
+    });
+  });
+
+  function renderAll(){
+    const filtered = entries.filter(inRange);
+    document.getElementById('rangeLabel').textContent =
+      fromInput.value && toInput.value ? `${fromInput.value} → ${toInput.value}` : '';
+    renderTallies(filtered);
+    renderChannelReport(filtered);
+    renderTable(filtered);
+  }
+
+  if(entries.length === 0){
+    document.getElementById('tallies').innerHTML =
+      `<div class="tally" style="grid-column:1/-1;"><div class="l">No ledger entries yet — add some on the Ledger page first.</div></div>`;
+    document.getElementById('channelReport').innerHTML = `<div class="empty">Nothing to report yet.</div>`;
+    document.getElementById('reportTableBody').innerHTML =
+      `<tr><td colspan="6" style="text-align:center; color:var(--ink-soft); padding:24px;">No entries.</td></tr>`;
+  } else {
+    renderAll();
+  }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GSP Derivative Works Ledger</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="wrap">
+
+  <header class="masthead">
+    <div class="masthead-top">
+      <span class="case-label">Provenance Tracking &middot; Open Source Reuse</span>
+      <span class="case-label" id="lastUpdated">No entries yet</span>
+    </div>
+    <h1>GenAI Security Project — Derivative Works Ledger</h1>
+    <div class="subtitle">Tracking reuse of <b>OWASP GenAI Security Project</b> materials off-site: presentations, articles, marketing collateral, conference sessions, podcasts, and training content.</div>
+    <nav class="masthead-nav">
+      <a href="index.html" class="active">Ledger</a>
+      <a href="report.html">Reporting</a>
+    </nav>
+  </header>
+
+  <div class="tallies" id="tallies"></div>
+
+  <h2 class="section">Needs review — crawler candidates</h2>
+  <div class="count-line" id="candidateCountLine"></div>
+  <div class="ledger" id="candidates"></div>
+
+  <h2 class="section">Log a new entry</h2>
+  <div class="entry-form">
+    <div class="grid2">
+      <div class="field">
+        <label for="f-title">Title / description</label>
+        <input type="text" id="f-title" placeholder="e.g. &quot;Top 10 LLM Risks&quot; slide reused in vendor webinar">
+      </div>
+      <div class="field">
+        <label for="f-type">Type</label>
+        <select id="f-type">
+          <option>Presentation</option>
+          <option>Marketing document</option>
+          <option>Published article</option>
+          <option>Conference session</option>
+          <option>Podcast</option>
+          <option>Training class</option>
+          <option>Other</option>
+        </select>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="field">
+        <label for="f-org">Company / individual</label>
+        <input type="text" id="f-org" placeholder="Who is using it">
+      </div>
+      <div class="field">
+        <label for="f-location">Location (URL, event + city, platform)</label>
+        <input type="text" id="f-location" placeholder="e.g. RSAC 2026, San Francisco — or a URL">
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="field">
+        <label for="f-date">Date observed</label>
+        <input type="date" id="f-date">
+      </div>
+      <div class="field">
+        <label for="f-attr">Attribution status</label>
+        <select id="f-attr">
+          <option value="attributed">Attributed / licensed correctly</option>
+          <option value="unclear">Unclear</option>
+          <option value="unattributed">Not attributed</option>
+        </select>
+      </div>
+    </div>
+    <div class="field">
+      <label for="f-link">Evidence link (optional)</label>
+      <input type="text" id="f-link" placeholder="https://…">
+    </div>
+    <div class="field">
+      <label for="f-notes">Notes</label>
+      <textarea id="f-notes" placeholder="Follow-up needed, contact made, specific resources reused, etc."></textarea>
+    </div>
+    <div class="form-actions">
+      <button class="btn secondary" id="clearFormBtn" type="button">Clear</button>
+      <button class="btn" id="addBtn" type="button">Add to ledger</button>
+    </div>
+  </div>
+
+  <h2 class="section">Ledger</h2>
+  <div class="toolbar">
+    <input type="text" id="search" placeholder="Search title, org, location, notes…">
+    <select id="filterType">
+      <option value="">All types</option>
+      <option>Presentation</option>
+      <option>Marketing document</option>
+      <option>Published article</option>
+      <option>Conference session</option>
+      <option>Podcast</option>
+      <option>Training class</option>
+      <option>Other</option>
+    </select>
+    <select id="filterAttr">
+      <option value="">All attribution</option>
+      <option value="attributed">Attributed</option>
+      <option value="unclear">Unclear</option>
+      <option value="unattributed">Not attributed</option>
+    </select>
+  </div>
+  <div class="count-line" id="countLine"></div>
+  <div class="ledger" id="ledger"></div>
+
+  <footer class="util">
+    <span>Data stored locally in this browser.</span>
+    <div>
+      <button class="btn secondary" id="exportBtn" type="button">Export JSON</button>
+      <button class="btn secondary" id="importBtn" type="button">Import JSON</button>
+      <input type="file" id="importFile" accept="application/json" style="display:none">
+    </div>
+  </footer>
+
+</div>
+
+<script>
+(function(){
+  const STORAGE_KEY = 'gsp-derivative-ledger-v1';
+
+  function load(){
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : [];
+    }catch(e){ return []; }
+  }
+  function save(entries){
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+  }
+
+  let entries = load();
+
+  const DISMISSED_KEY = 'gsp-dismissed-candidates-v1';
+  const PROMOTED_KEY = 'gsp-promoted-candidates-v1';
+  function loadIdSet(key){
+    try{ return new Set(JSON.parse(localStorage.getItem(key) || '[]')); }
+    catch(e){ return new Set(); }
+  }
+  function saveIdSet(key, set){ localStorage.setItem(key, JSON.stringify([...set])); }
+  let dismissed = loadIdSet(DISMISSED_KEY);
+  let promoted = loadIdSet(PROMOTED_KEY);
+  let candidates = [];
+
+  async function loadCandidates(){
+    try{
+      const res = await fetch('data/candidates.json', { cache: 'no-store' });
+      if(!res.ok) throw new Error('not found');
+      candidates = await res.json();
+    }catch(e){
+      candidates = [];
+    }
+    renderCandidates();
+  }
+
+  function renderCandidates(){
+    const visible = candidates.filter(c => !dismissed.has(c.id) && !promoted.has(c.id));
+    document.getElementById('candidateCountLine').textContent =
+      candidates.length === 0
+        ? 'No crawler data loaded yet — run the GitHub Action, or add entries manually below.'
+        : `${visible.length} awaiting review (${dismissed.size} dismissed, ${promoted.size} promoted so far)`;
+
+    const container = document.getElementById('candidates');
+    if(visible.length === 0){
+      container.innerHTML = candidates.length === 0 ? '' :
+        `<div class="empty">Nothing left to review right now.</div>`;
+      return;
+    }
+    container.innerHTML = visible.map(c => `
+      <div class="card candidate" data-id="${c.id}">
+        <div class="card-top">
+          <div>
+            <div class="card-id"><span class="candidate-tag">Unreviewed</span> &middot; <span class="type-tag">${escapeHtml(c.type || 'Other')}</span>${c.engine ? ` &middot; <span class="type-tag">${escapeHtml(c.engine)}</span>` : ''}${c.languageLabel && c.languageLabel !== 'English (US)' ? ` &middot; <span class="type-tag">${escapeHtml(c.languageLabel)}</span>` : ''}${c.conferenceName ? ` &middot; <span class="type-tag">${escapeHtml(c.conferenceName)}</span>` : ''}</div>
+            <div class="card-title">${escapeHtml(c.title) || '(untitled)'}</div>
+          </div>
+        </div>
+        <div class="meta-row">
+          <span><b>Domain:</b> ${escapeHtml(c.org) || '—'}</span>
+          <span><b>Link:</b> <a href="${escapeHtml(c.link)}" target="_blank" rel="noopener">${escapeHtml(c.link)}</a></span>
+        </div>
+        ${c.snippet ? `<div class="snippet">"${escapeHtml(c.snippet)}"</div>` : ''}
+        <div class="card-actions">
+          <button class="btn" data-caction="promote" data-id="${c.id}">Promote to ledger</button>
+          <button class="btn secondary" data-caction="dismiss" data-id="${c.id}">Dismiss</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  document.getElementById('candidates').addEventListener('click', (ev) => {
+    const btn = ev.target.closest('button[data-caction]');
+    if(!btn) return;
+    const id = btn.dataset.id;
+    const c = candidates.find(x => x.id === id);
+    if(!c) return;
+
+    if(btn.dataset.caction === 'dismiss'){
+      dismissed.add(id);
+      saveIdSet(DISMISSED_KEY, dismissed);
+      renderCandidates();
+    } else if(btn.dataset.caction === 'promote'){
+      document.getElementById('f-title').value = c.title || '';
+      document.getElementById('f-type').value = ['Presentation','Marketing document','Published article','Conference session','Podcast','Training class','Other'].includes(c.type) ? c.type : 'Other';
+      document.getElementById('f-org').value = c.org || '';
+      document.getElementById('f-location').value = c.link || '';
+      document.getElementById('f-link').value = c.link || '';
+      document.getElementById('f-notes').value = 'Auto-discovered via crawler'
+        + (c.languageLabel ? ' (' + c.languageLabel + ')' : '')
+        + (c.conferenceName ? ' — matched alongside "' + c.conferenceName + '"' : '')
+        + '. Query: ' + (c.matchedQuery || '')
+        + (c.snippet ? ('\n\n"' + c.snippet + '"') : '');
+      document.getElementById('f-attr').value = 'unclear';
+      pendingPromoteId = id;
+      document.getElementById('addBtn').textContent = 'Add to ledger';
+      document.querySelector('.entry-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      document.getElementById('f-date').focus();
+    }
+  });
+
+  let pendingPromoteId = null;
+
+  function nextCaseId(){
+    const n = entries.length ? Math.max(...entries.map(e => e.seq || 0)) + 1 : 1;
+    return n;
+  }
+
+  function fmtDate(d){
+    if(!d) return '—';
+    const dt = new Date(d + 'T00:00:00');
+    if(isNaN(dt)) return d;
+    return dt.toLocaleDateString(undefined, { year:'numeric', month:'short', day:'numeric' });
+  }
+
+  function attrLabel(v){
+    return { attributed: 'Attributed', unclear: 'Unclear', unattributed: 'Not attributed' }[v] || v;
+  }
+
+  function renderTallies(){
+    const total = entries.length;
+    const byAttr = { attributed:0, unclear:0, unattributed:0 };
+    const byType = {};
+    entries.forEach(e => {
+      byAttr[e.attr] = (byAttr[e.attr]||0)+1;
+      byType[e.type] = (byType[e.type]||0)+1;
+    });
+    const topType = Object.entries(byType).sort((a,b)=>b[1]-a[1])[0];
+
+    const tallies = [
+      { n: total, l: 'Total tracked' },
+      { n: byAttr.unattributed || 0, l: 'Not attributed' },
+      { n: byAttr.attributed || 0, l: 'Attributed' },
+      { n: topType ? topType[1] : 0, l: topType ? topType[0] : 'Top type' },
+    ];
+    document.getElementById('tallies').innerHTML = tallies.map(t => `
+      <div class="tally"><div class="n">${t.n}</div><div class="l">${t.l}</div></div>
+    `).join('');
+
+    const lastEl = document.getElementById('lastUpdated');
+    if(total === 0){
+      lastEl.textContent = 'No entries yet';
+    } else {
+      const latest = entries.reduce((a,b) => (a.createdAt > b.createdAt ? a : b));
+      lastEl.textContent = 'Last logged ' + new Date(latest.createdAt).toLocaleDateString();
+    }
+  }
+
+  function escapeHtml(s){
+    return (s||'').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  }
+
+  function renderLedger(){
+    const q = document.getElementById('search').value.trim().toLowerCase();
+    const ft = document.getElementById('filterType').value;
+    const fa = document.getElementById('filterAttr').value;
+
+    let filtered = entries.filter(e => {
+      if(ft && e.type !== ft) return false;
+      if(fa && e.attr !== fa) return false;
+      if(q){
+        const hay = [e.title, e.org, e.location, e.notes].join(' ').toLowerCase();
+        if(!hay.includes(q)) return false;
+      }
+      return true;
+    }).sort((a,b) => (b.date||'').localeCompare(a.date||''));
+
+    document.getElementById('countLine').textContent =
+      `${filtered.length} of ${entries.length} entries shown`;
+
+    const container = document.getElementById('ledger');
+    if(entries.length === 0){
+      container.innerHTML = `<div class="empty"><div class="big">Ledger is empty</div>Log the first derivative work above to start tracking.</div>`;
+      return;
+    }
+    if(filtered.length === 0){
+      container.innerHTML = `<div class="empty"><div class="big">No matches</div>Try clearing the search or filters.</div>`;
+      return;
+    }
+
+    container.innerHTML = filtered.map(e => `
+      <div class="card" data-id="${e.id}">
+        <div class="card-top">
+          <div>
+            <div class="card-id">GSP-${String(e.seq).padStart(4,'0')} &middot; <span class="type-tag">${escapeHtml(e.type)}</span></div>
+            <div class="card-title">${escapeHtml(e.title) || '(untitled entry)'}</div>
+          </div>
+          <span class="stamp ${e.attr}">${attrLabel(e.attr)}</span>
+        </div>
+        <div class="meta-row">
+          <span><b>By:</b> ${escapeHtml(e.org) || '—'}</span>
+          <span><b>Where:</b> ${e.link ? `<a href="${escapeHtml(e.link)}" target="_blank" rel="noopener">${escapeHtml(e.location) || 'link'}</a>` : (escapeHtml(e.location) || '—')}</span>
+          <span><b>Observed:</b> ${fmtDate(e.date)}</span>
+        </div>
+        ${e.notes ? `<div class="notes">${escapeHtml(e.notes)}</div>` : ''}
+        <div class="card-actions">
+          <button class="btn secondary" data-action="edit" data-id="${e.id}">Edit</button>
+          <button class="btn danger" data-action="delete" data-id="${e.id}">Delete</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function renderAll(){ renderTallies(); renderLedger(); }
+
+  function readForm(){
+    return {
+      title: document.getElementById('f-title').value.trim(),
+      type: document.getElementById('f-type').value,
+      org: document.getElementById('f-org').value.trim(),
+      location: document.getElementById('f-location').value.trim(),
+      date: document.getElementById('f-date').value,
+      attr: document.getElementById('f-attr').value,
+      link: document.getElementById('f-link').value.trim(),
+      notes: document.getElementById('f-notes').value.trim(),
+    };
+  }
+  function clearForm(){
+    ['f-title','f-org','f-location','f-date','f-link','f-notes'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('f-type').selectedIndex = 0;
+    document.getElementById('f-attr').selectedIndex = 0;
+  }
+
+  let editingId = null;
+
+  document.getElementById('addBtn').addEventListener('click', () => {
+    const data = readForm();
+    if(!data.title){
+      document.getElementById('f-title').focus();
+      return;
+    }
+    if(editingId){
+      entries = entries.map(e => e.id === editingId ? { ...e, ...data } : e);
+      editingId = null;
+      document.getElementById('addBtn').textContent = 'Add to ledger';
+    } else {
+      entries.push({
+        id: 'e' + Date.now() + Math.random().toString(36).slice(2,7),
+        seq: nextCaseId(),
+        createdAt: Date.now(),
+        ...data
+      });
+    }
+    if(pendingPromoteId){
+      promoted.add(pendingPromoteId);
+      saveIdSet(PROMOTED_KEY, promoted);
+      pendingPromoteId = null;
+      renderCandidates();
+    }
+    save(entries);
+    clearForm();
+    renderAll();
+  });
+
+  document.getElementById('clearFormBtn').addEventListener('click', () => {
+    clearForm();
+    editingId = null;
+    pendingPromoteId = null;
+    document.getElementById('addBtn').textContent = 'Add to ledger';
+  });
+
+  document.getElementById('ledger').addEventListener('click', (ev) => {
+    const btn = ev.target.closest('button[data-action]');
+    if(!btn) return;
+    const id = btn.dataset.id;
+    const entry = entries.find(e => e.id === id);
+    if(!entry) return;
+
+    if(btn.dataset.action === 'delete'){
+      if(confirm('Remove this entry from the ledger? This cannot be undone.')){
+        entries = entries.filter(e => e.id !== id);
+        save(entries);
+        renderAll();
+      }
+    } else if(btn.dataset.action === 'edit'){
+      document.getElementById('f-title').value = entry.title;
+      document.getElementById('f-type').value = entry.type;
+      document.getElementById('f-org').value = entry.org;
+      document.getElementById('f-location').value = entry.location;
+      document.getElementById('f-date').value = entry.date;
+      document.getElementById('f-attr').value = entry.attr;
+      document.getElementById('f-link').value = entry.link;
+      document.getElementById('f-notes').value = entry.notes;
+      editingId = id;
+      document.getElementById('addBtn').textContent = 'Save changes';
+      document.querySelector('.entry-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+
+  ['search','filterType','filterAttr'].forEach(id => {
+    document.getElementById(id).addEventListener('input', renderLedger);
+    document.getElementById(id).addEventListener('change', renderLedger);
+  });
+
+  document.getElementById('exportBtn').addEventListener('click', () => {
+    const blob = new Blob([JSON.stringify(entries, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'gsp-derivative-ledger-' + new Date().toISOString().slice(0,10) + '.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  document.getElementById('importBtn').addEventListener('click', () => {
+    document.getElementById('importFile').click();
+  });
+  document.getElementById('importFile').addEventListener('change', (ev) => {
+    const file = ev.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try{
+        const incoming = JSON.parse(reader.result);
+        if(!Array.isArray(incoming)) throw new Error('not an array');
+        const existingIds = new Set(entries.map(e => e.id));
+        const merged = entries.concat(incoming.filter(e => e && e.id && !existingIds.has(e.id)));
+        entries = merged;
+        save(entries);
+        renderAll();
+        alert('Imported ' + incoming.length + ' entries (duplicates skipped).');
+      }catch(e){
+        alert('Could not read that file as a valid ledger export.');
+      }
+      ev.target.value = '';
+    };
+    reader.readAsText(file);
+  });
+
+  renderAll();
+  loadCandidates();
+})();
+</script>
+</body>
+</html>
