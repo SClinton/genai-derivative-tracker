@@ -29,10 +29,11 @@ engines:
 # Which SerpAPI sub-engines to query (only used if serpapi is enabled above).
 # `google` gives real unrestricted google.com results (replaces the old
 # google_cse engine, which Google's Custom Search API can no longer do).
+# Narrowed to just `google` to fit SerpAPI's 100 searches/month free tier --
+# each sub-engine here multiplies every query. Add bing/duckduckgo back if
+# you upgrade the plan.
 serpapi_engines:
   - google
-  - bing
-  - duckduckgo
 
 # Perplexity model to use (only used if perplexity is enabled above).
 perplexity_model: sonar
@@ -71,9 +72,12 @@ languages:
   - { code: en, country: US, region: "English (default)",  label: "English (US)",        enabled: true }
 
   # --- Europe ---
-  - { code: es, country: ES, region: Europe, label: "Spanish (Spain)",     enabled: true }
-  - { code: fr, country: FR, region: Europe, label: "French",              enabled: true }
-  - { code: de, country: DE, region: Europe, label: "German",              enabled: true }
+  # Disabled to fit SerpAPI's free tier (100 searches/month) -- each
+  # enabled language multiplies Pass 1's query count. Re-enable once on a
+  # paid plan; see the cost note above.
+  - { code: es, country: ES, region: Europe, label: "Spanish (Spain)",     enabled: false }
+  - { code: fr, country: FR, region: Europe, label: "French",              enabled: false }
+  - { code: de, country: DE, region: Europe, label: "German",              enabled: false }
   - { code: it, country: IT, region: Europe, label: "Italian",             enabled: false }
   - { code: pt, country: PT, region: Europe, label: "Portuguese (Portugal)", enabled: false }
   - { code: nl, country: NL, region: Europe, label: "Dutch",               enabled: false }
@@ -81,18 +85,18 @@ languages:
   - { code: ru, country: RU, region: Europe, label: "Russian",             enabled: false }
 
   # --- Japan ---
-  - { code: ja, country: JP, region: Japan, label: "Japanese",             enabled: true }
+  - { code: ja, country: JP, region: Japan, label: "Japanese",             enabled: false }
 
   # --- China ---
-  - { code: zh-CN, country: CN, region: China, label: "Chinese (Simplified)",  enabled: true }
+  - { code: zh-CN, country: CN, region: China, label: "Chinese (Simplified)",  enabled: false }
   - { code: zh-TW, country: TW, region: China, label: "Chinese (Traditional)", enabled: false }
 
   # --- India ---
-  - { code: hi, country: IN, region: India, label: "Hindi",                enabled: true }
+  - { code: hi, country: IN, region: India, label: "Hindi",                enabled: false }
   - { code: en, country: IN, region: India, label: "English (India)",      enabled: false }
 
   # --- South America ---
-  - { code: pt, country: BR, region: "South America", label: "Portuguese (Brazil)",   enabled: true }
+  - { code: pt, country: BR, region: "South America", label: "Portuguese (Brazil)",   enabled: false }
   - { code: es, country: AR, region: "South America", label: "Spanish (Argentina)",   enabled: false }
   - { code: es, country: MX, region: "South America", label: "Spanish (Mexico)",      enabled: false }
   - { code: es, country: CO, region: "South America", label: "Spanish (Colombia)",    enabled: false }
@@ -114,16 +118,15 @@ languages:
 # titles × conference-names × engines pass, controlled separately here.
 #
 # COST WARNING: with the defaults below (~35 names) this is roughly 35×
-# your resource title count, per SerpAPI sub-engine enabled (see
-# serpapi_engines above -- google_cse used to be the cheap default here, but
-# it's gone; serpapi with all three sub-engines makes this pass noticeably
-# more expensive than before). SerpAPI's free tier is only 100 searches/
-# month, so trim the `names:` lists, disable categories you don't need, or
-# temporarily narrow serpapi_engines to just `google` before turning this on
-# for a long query list.
+# your resource title count, per SerpAPI sub-engine enabled. With 18
+# resource titles that's ~1,890 searches/run alone -- by far the single
+# biggest cost driver (roughly 81% of total query volume) -- so this pass
+# is disabled below to fit SerpAPI's 100 searches/month free tier. Re-enable
+# once on a paid plan, or narrow it (fewer names/categories, or scope
+# `engines:` down before flipping `enabled: true`).
 
 conference_search:
-  enabled: true
+  enabled: false
   engines:
     - serpapi
   results_per_query: 10
@@ -190,13 +193,35 @@ conference_search:
         - "ACM CCS"
 
 queries:
+  # Sourced from genai.owasp.org/resources/, genai.owasp.org/llm-top-10/,
+  # genai.owasp.org, and github.com/genai-security-project repos, reviewed
+  # 2026-08-16. Quarter/year suffixes deliberately dropped from recurring
+  # reports (e.g. "Q2 2026") -- a reuse/citation is more likely to drop the
+  # quarter than keep it, so the family name should catch more real matches.
+
+  # --- Flagship Top 10 documents (highest-value) ---
   - "\"OWASP Top 10 for LLM Applications\" -site:owasp.org"
-  - "\"OWASP GenAI Security Project\" presentation"
-  - "\"OWASP LLM Top 10\" slides"
-  - "\"OWASP AI Security\" whitepaper"
-  # Add more resource-specific titles below, e.g.:
-  # - "\"GenAI Red Teaming Guide\" OWASP"
-  # - "\"Agentic AI Threats and Mitigations\" OWASP"
+  - "\"OWASP GenAI LLM Top 10\""
+  - "\"OWASP Top 10 for LLM Applications\" \"2023\""
+  - "\"OWASP Top 10 for Agentic Applications\""
+
+  # --- Other major named guides/reports ---
+  - "\"OWASP GenAI Data Security Risks and Mitigations\""
+  - "\"A Practical Guide for Secure MCP Server Development\""
+  - "\"A Practical Guide for Securely Using Third-Party MCP Servers\""
+  - "\"OWASP GenAI Security Project\" \"Threat Defense COMPASS\""
+  - "\"State of Agentic AI Security and Governance\""
+  - "\"AI Security Solutions Landscape\" \"Agentic AI\""
+  - "\"AI Security Solutions Landscape\" \"LLM and Gen AI\""
+  - "\"OWASP Vendor Evaluation Criteria\" \"AI Red Teaming\""
+  - "\"OWASP Guide to Preparing and Responding to Deepfake Events\""
+  - "\"OWASP GenAI Exploit Round-up Report\""
+  - "\"OWASP Gen AI\" \"Agentic Security Top 10\" presentation"
+
+  # --- Tools/repos (code reuse, not just document mentions) ---
+  - "\"OWASP AIBOM Generator\""
+  - "\"FinBot\" \"Capture The Flag\" OWASP"
+  - "\"GenAI Security Advisor\" OWASP"
 
 # Domains to always ignore (official channels + noisy aggregators).
 # Matches the domain itself and any subdomain.
