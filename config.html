@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GSP Derivative Works — Configuration</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="wrap">
+
+  <header class="masthead">
+    <div class="masthead-top">
+      <span class="case-label">Provenance Tracking &middot; Open Source Reuse</span>
+      <span class="case-label">Crawler settings</span>
+    </div>
+    <h1>Configuration</h1>
+    <div class="subtitle">Current crawler tier, and what upgrading each search backend unlocks &mdash; including which upgrades need a brand-new API key versus just a billing plan change on a key you already have.</div>
+    <nav class="masthead-nav">
+      <a href="index.html">Ledger</a>
+      <a href="report.html">Reporting</a>
+      <a href="config.html" class="active">Config</a>
+    </nav>
+  </header>
+
+  <div class="notice">
+    <b>This page never handles API keys or secrets.</b> It's a static site with no backend, so
+    nothing typed into a browser could reach GitHub safely. Every credential lives only in this
+    repo's <a href="https://github.com/SClinton/genai-derivative-tracker/settings/secrets/actions" target="_blank" rel="noopener">GitHub Actions secrets</a>,
+    set via the <code>gh</code> CLI or the Settings page &mdash; never here.
+  </div>
+
+  <h2 class="section">Current status</h2>
+  <div class="count-line" id="statusLine">Reading crawler/queries.yaml&hellip;</div>
+  <div class="status-grid" id="statusGrid"></div>
+
+  <h2 class="section">Upgrade paths</h2>
+
+  <div class="upgrade-card">
+    <h3>SerpAPI paid plan <span class="badge same-key">Same key &mdash; no new credential</span></h3>
+    <p>
+      Covers Google, Bing, and DuckDuckGo search. The free tier is 100 searches/month, which is
+      why <code>serpapi_engines</code> is narrowed to just <code>google</code>, most languages are
+      gated off via <code>region_groups</code>, and <code>conference_search</code> is disabled &mdash;
+      see <a href="https://github.com/SClinton/genai-derivative-tracker/blob/main/crawler/queries.yaml" target="_blank" rel="noopener">crawler/queries.yaml</a>
+      for the exact cost-math comments next to each setting.
+    </p>
+    <h4>To upgrade</h4>
+    <ol>
+      <li>Upgrade your plan at <a href="https://serpapi.com/pricing" target="_blank" rel="noopener">serpapi.com/pricing</a>. Your existing <code>SERPAPI_KEY</code> keeps working &mdash; nothing to re-set as a GitHub secret.</li>
+      <li>In <code>crawler/queries.yaml</code>, re-enable coverage to match your new quota:</li>
+    </ol>
+    <div class="code-block"><span class="comment"># Add more SerpAPI sub-engines (each one multiplies query count):</span>
+serpapi_engines:
+  - google
+  - bing
+  - duckduckgo
+
+<span class="comment"># Flip a whole region back on (its individual language `enabled:` flags decide which ones within it actually run):</span>
+region_groups:
+  Europe: true
+
+<span class="comment"># Re-enable the conference/association discovery pass (was ~81% of total query volume):</span>
+conference_search:
+  enabled: true</div>
+    <p>Commit and push &mdash; the next scheduled run (or a manual <b>Actions → Crawl for derivative works → Run workflow</b>) picks it up automatically.</p>
+  </div>
+
+  <div class="upgrade-card">
+    <h3>Perplexity <span class="badge same-key">Same key &mdash; billed per request already</span></h3>
+    <p>
+      Perplexity has no separate free/paid tier to toggle &mdash; it's billed per request from the
+      start on the same <code>PERPLEXITY_API_KEY</code>. "Upgrading" here just means checking your
+      spend against how many queries you're running (titles &times; enabled languages, currently
+      shown above) and adjusting <code>queries.yaml</code> if needed.
+    </p>
+    <p>Check current usage/billing at <a href="https://www.perplexity.ai/settings/api" target="_blank" rel="noopener">perplexity.ai/settings/api</a>.</p>
+  </div>
+
+  <div class="upgrade-card">
+    <h3>Google Cloud Translation API <span class="badge new-cred">Requires a new credential</span></h3>
+    <p>
+      Only needed if you want <code>translate_modifiers: true</code> &mdash; translating generic
+      terms like "presentation"/"training course" into each enabled language to catch paraphrased
+      mentions, not just exact-title hits. This is the one upgrade path here that genuinely needs
+      a credential that isn't already configured.
+    </p>
+    <h4>To enable</h4>
+    <ol>
+      <li>In <a href="https://console.cloud.google.com/" target="_blank" rel="noopener">Google Cloud Console</a>, enable the <b>Cloud Translation API</b> for a project (can reuse any existing project).</li>
+      <li>Create an API key under <b>APIs &amp; Services &rarr; Credentials</b>.</li>
+      <li>Add it as a GitHub Actions secret yourself (I won't ask for or handle the value):</li>
+    </ol>
+    <div class="code-block">gh secret set GOOGLE_TRANSLATE_API_KEY --repo SClinton/genai-derivative-tracker</div>
+    <ol start="4">
+      <li>Set <code>translate_modifiers: true</code> in <code>crawler/queries.yaml</code>.</li>
+    </ol>
+  </div>
+
+  <h2 class="section">Quick reference</h2>
+  <div class="upgrade-card">
+    <h4>Check which secrets are currently set (names only, never values)</h4>
+    <div class="code-block">gh secret list --repo SClinton/genai-derivative-tracker</div>
+    <h4>Set or replace a secret</h4>
+    <div class="code-block">gh secret set SECRET_NAME --repo SClinton/genai-derivative-tracker</div>
+    <h4>Remove a stale secret</h4>
+    <div class="code-block">gh secret delete SECRET_NAME --repo SClinton/genai-derivative-tracker</div>
+    <h4>Trigger a crawl run manually</h4>
+    <div class="code-block">gh workflow run "Crawl for derivative works" --repo SClinton/genai-derivative-tracker</div>
+  </div>
+
+  <p class="subtitle">Full setup details: <a href="https://github.com/SClinton/genai-derivative-tracker/blob/main/crawler/SETUP.md" target="_blank" rel="noopener">crawler/SETUP.md</a></p>
+
+</div>
+
+<script>
+(function(){
+  const statusLine = document.getElementById('statusLine');
+  const statusGrid = document.getElementById('statusGrid');
+
+  function item(label, value, on){
+    return `<div class="status-item"><div class="label">${label}</div><div class="value ${on ? 'on' : 'off'}">${value}</div></div>`;
+  }
+
+  fetch('crawler/queries.yaml', { cache: 'no-store' })
+    .then(res => { if(!res.ok) throw new Error('not found'); return res.text(); })
+    .then(text => {
+      // Lightweight targeted parsing (not a full YAML parser) -- this file's
+      // structure is authored by this same project, so a few regexes over
+      // known blocks is simpler and more transparent than a YAML dependency.
+      // Falls back to a plain message below if any pattern isn't found.
+      const engMatch = text.match(/serpapi_engines:\s*\n((?:\s*-\s*\S+\s*\n)+)/);
+      const engines = engMatch ? [...engMatch[1].matchAll(/-\s*(\S+)/g)].map(m => m[1]) : null;
+
+      const confMatch = text.match(/conference_search:\s*\n\s*enabled:\s*(true|false)/);
+      const confEnabled = confMatch ? confMatch[1] === 'true' : null;
+
+      const regionBlockMatch = text.match(/region_groups:\s*\n((?:[ \t]*(?:"[^"]+"|[\w ]+):[ \t]*(?:true|false)[ \t]*\n)+)/);
+      let regions = null;
+      if(regionBlockMatch){
+        regions = [...regionBlockMatch[1].matchAll(/(?:"([^"]+)"|([\w ]+?)):\s*(true|false)/g)]
+          .map(m => ({ name: (m[1] || m[2]).trim(), on: m[3] === 'true' }));
+      }
+
+      const queriesBlockMatch = text.match(/\nqueries:\s*\n([\s\S]*?)\n(?:#[- ]|excluded_domains:)/);
+      const queryCount = queriesBlockMatch
+        ? (queriesBlockMatch[1].match(/^\s*-\s*"/gm) || []).length
+        : null;
+
+      if(!engines && confEnabled === null && !regions && queryCount === null){
+        throw new Error('no recognizable config blocks found');
+      }
+
+      const activeRegions = regions ? regions.filter(r => r.on).length : null;
+      const totalRegions = regions ? regions.length : null;
+
+      statusLine.textContent = 'Live-read from crawler/queries.yaml on this page load.';
+      statusGrid.innerHTML = [
+        queryCount !== null ? item('Resource queries', queryCount, true) : '',
+        engines ? item('SerpAPI sub-engines', engines.join(', '), engines.length > 1) : '',
+        regions ? item('Active language regions', `${activeRegions} of ${totalRegions}`, activeRegions > 1) : '',
+        confEnabled !== null ? item('Conference search pass', confEnabled ? 'Enabled' : 'Disabled', confEnabled) : '',
+      ].join('');
+    })
+    .catch(() => {
+      statusLine.innerHTML = 'Could not read live status &mdash; check <a href="https://github.com/SClinton/genai-derivative-tracker/blob/main/crawler/queries.yaml" target="_blank" rel="noopener">crawler/queries.yaml</a> directly.';
+      statusGrid.innerHTML = '';
+    });
+})();
+</script>
+</body>
+</html>
