@@ -5,36 +5,29 @@ then writes unreviewed candidates to `data/candidates.json`. The site shows
 them under **Needs review** with Promote / Dismiss buttons — nothing gets
 counted in your ledger stats until you promote it.
 
-You don't need all three backends — enable whichever you set up in
+You don't need both backends — enable whichever you set up in
 `crawler/queries.yaml` under `engines:`.
 
 ## Traditional web search
 
-### Option A — Google Programmable Search (Custom Search JSON API)
+### SerpAPI (Google + Bing + DuckDuckGo)
 
-1. Go to https://console.cloud.google.com/, create (or reuse) a project.
-2. Enable the **Custom Search API** for that project.
-3. Under **APIs & Services → Credentials**, create an **API key**. This is
-   `GOOGLE_CSE_API_KEY`.
-4. Go to https://programmablesearchengine.google.com/ and create a new
-   search engine, set to **search the entire web**.
-5. Copy the **Search engine ID** — this is `GOOGLE_CSE_CX`.
-
-Free tier: 100 queries/day.
-
-### Option B — SerpAPI (Bing + DuckDuckGo)
-
-Microsoft retired the standalone Bing Web Search API in August 2025, so
-Bing results are only practically reachable today through a third-party SERP
-provider. SerpAPI covers both Bing and DuckDuckGo through one key.
+Google's Custom Search JSON API used to be the way to do this, but as of
+2025 its free/standard tier only searches domains you explicitly configure
+into the search engine, not the open web — it can't do broad, unrestricted
+search anymore, which is what this crawler needs. Microsoft also retired the
+standalone Bing Web Search API in August 2025. SerpAPI is the practical
+route to real Google, Bing, and DuckDuckGo results today, all through one
+key.
 
 1. Sign up at https://serpapi.com/ and grab your API key from the dashboard.
 2. Set it as `SERPAPI_KEY`.
 3. In `queries.yaml`, `serpapi_engines` controls which sub-engines run
-   (defaults to `bing` and `duckduckgo`).
+   (defaults to `google`, `bing`, and `duckduckgo`).
 
 Free tier is limited (100 searches/month) — each query × each sub-engine
-counts as one search, so keep your query list lean or upgrade the plan.
+counts as one search, so keep your query list lean, narrow `serpapi_engines`,
+or upgrade the plan.
 
 ## AI answer engine
 
@@ -68,7 +61,6 @@ a long query list.
 In your repo: **Settings → Secrets and variables → Actions → New repository
 secret**. Add whichever of these you're using:
 
-- `GOOGLE_CSE_API_KEY`, `GOOGLE_CSE_CX`
 - `SERPAPI_KEY`
 - `PERPLEXITY_API_KEY`
 
@@ -92,9 +84,7 @@ quotes work best. Also set `engines:` to the backends you've configured.
 ```bash
 cd crawler
 pip install -r requirements.txt
-export GOOGLE_CSE_API_KEY=your_key      # whichever engines you're using
-export GOOGLE_CSE_CX=your_cx
-export SERPAPI_KEY=your_key
+export SERPAPI_KEY=your_key      # whichever engines you're using
 export PERPLEXITY_API_KEY=your_key
 python search_and_log.py
 ```
@@ -162,13 +152,15 @@ Edit the `names:` list under any category in `queries.yaml` to add or
 remove specific events. This pass does **not** multiply by the languages
 list — conference names are proper nouns too, so it runs once per title ×
 conference name × whichever engines are listed under
-`conference_search.engines` (defaults to just `google_cse` to keep it
-cheap — add more engines deliberately).
+`conference_search.engines` (defaults to `serpapi`, which itself runs one
+search per sub-engine in `serpapi_engines` — see the cost note in
+`queries.yaml`).
 
 **Cost note:** with the default ~35 names across all four categories, this
-pass alone is roughly 35× your resource title count per engine enabled per
-run. Disable categories you don't need, or trim the `names:` lists, before
-scaling up your resource title list.
+pass alone is roughly 35× your resource title count, per SerpAPI sub-engine
+enabled, per run. Disable categories you don't need, trim the `names:`
+lists, or narrow `serpapi_engines`, before scaling up your resource title
+list.
 
 ## Limitations, honestly
 

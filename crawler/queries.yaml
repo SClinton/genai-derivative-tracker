@@ -4,23 +4,33 @@
 # exact titles of guides, cheat sheets, or frameworks work far better than
 # generic terms like "OWASP GenAI", which will mostly return noise.
 #
-# Google CSE search operators work here, e.g. quotes for exact phrases,
-# "-word" to exclude, "site:" / "-site:" to include or exclude domains.
+# Standard Google search operators work here, e.g. quotes for exact phrases,
+# "-word" to exclude, "site:" / "-site:" to include or exclude domains --
+# these reach real google.com results via SerpAPI's `google` sub-engine
+# below, not Google's own Custom Search API (see note below).
 
 # Which search backends to run each query against. Each needs its own API
 # key set as an environment variable (locally) or GitHub Actions secret.
-#   google_cse  -> GOOGLE_CSE_API_KEY, GOOGLE_CSE_CX   (traditional web search)
-#   serpapi     -> SERPAPI_KEY                          (Bing + DuckDuckGo, since
-#                                                         Bing retired its own API)
-#   perplexity  -> PERPLEXITY_API_KEY                   (AI answer engine, cites sources)
+#   serpapi     -> SERPAPI_KEY   (Google + Bing + DuckDuckGo -- see
+#                                 serpapi_engines below. Google's own Custom
+#                                 Search API was dropped as an engine here:
+#                                 as of 2025 its free/standard tier only
+#                                 searches domains you explicitly configure,
+#                                 not the open web, so it can't do what this
+#                                 crawler needs -- broad, unrestricted google.com
+#                                 results now come from SerpAPI's `google`
+#                                 sub-engine instead, reusing the same key.)
+#   perplexity  -> PERPLEXITY_API_KEY   (AI answer engine, cites sources)
 # Comment out any engine you haven't set up yet.
 engines:
-  - google_cse
   - serpapi
   - perplexity
 
 # Which SerpAPI sub-engines to query (only used if serpapi is enabled above).
+# `google` gives real unrestricted google.com results (replaces the old
+# google_cse engine, which Google's Custom Search API can no longer do).
 serpapi_engines:
+  - google
   - bing
   - duckduckgo
 
@@ -104,15 +114,18 @@ languages:
 # titles × conference-names × engines pass, controlled separately here.
 #
 # COST WARNING: with the defaults below (~35 names) this is roughly 35×
-# your resource title count, per engine enabled. Trim the lists or disable
-# categories you don't care about before turning this on for a long query
-# list. `conference_engines` defaults to just google_cse to keep this cheap;
-# add serpapi/perplexity deliberately once you've checked quota.
+# your resource title count, per SerpAPI sub-engine enabled (see
+# serpapi_engines above -- google_cse used to be the cheap default here, but
+# it's gone; serpapi with all three sub-engines makes this pass noticeably
+# more expensive than before). SerpAPI's free tier is only 100 searches/
+# month, so trim the `names:` lists, disable categories you don't need, or
+# temporarily narrow serpapi_engines to just `google` before turning this on
+# for a long query list.
 
 conference_search:
   enabled: true
   engines:
-    - google_cse
+    - serpapi
   results_per_query: 10
 
   categories:

@@ -8,9 +8,10 @@ human review in the ledger app.
 
 This does NOT auto-confirm anything. It only surfaces leads.
 
-Requires:
-  GOOGLE_CSE_API_KEY  - Google Programmable Search API key
-  GOOGLE_CSE_CX       - Search engine ID (configured to search "the web")
+Requires (whichever engines are enabled in crawler/queries.yaml):
+  SERPAPI_KEY          - SerpAPI key (Google + Bing + DuckDuckGo)
+  PERPLEXITY_API_KEY   - Perplexity API key
+  GOOGLE_TRANSLATE_API_KEY - optional, for translate_modifiers
 
 Config:
   crawler/queries.yaml - list of search queries + exclusion domains
@@ -165,7 +166,7 @@ def main():
     config = load_config()
     resource_titles = config.get("queries", [])
     excluded_domains = [d.lower() for d in config.get("excluded_domains", [])]
-    enabled_engines = config.get("engines", ["google_cse"])
+    enabled_engines = config.get("engines", ["serpapi"])
     languages = [l for l in config.get("languages", []) if l.get("enabled")]
     if not languages:
         languages = [{"code": "en", "country": "US", "region": "English (default)", "label": "English (US)"}]
@@ -214,7 +215,7 @@ def main():
     # -----------------------------------------------------------------
     conf_cfg = config.get("conference_search", {})
     if conf_cfg.get("enabled"):
-        conf_engines = conf_cfg.get("engines", ["google_cse"])
+        conf_engines = conf_cfg.get("engines", ["serpapi"])
         conf_job_cfg = {**config, "results_per_query": conf_cfg.get("results_per_query", 10)}
         categories = conf_cfg.get("categories", {})
 

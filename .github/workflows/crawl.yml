@@ -26,8 +26,6 @@ jobs:
 
       - name: Run crawler
         env:
-          GOOGLE_CSE_API_KEY: ${{ secrets.GOOGLE_CSE_API_KEY }}
-          GOOGLE_CSE_CX: ${{ secrets.GOOGLE_CSE_CX }}
           SERPAPI_KEY: ${{ secrets.SERPAPI_KEY }}
           PERPLEXITY_API_KEY: ${{ secrets.PERPLEXITY_API_KEY }}
           GOOGLE_TRANSLATE_API_KEY: ${{ secrets.GOOGLE_TRANSLATE_API_KEY }}
