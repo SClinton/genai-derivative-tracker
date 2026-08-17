@@ -214,6 +214,7 @@
         <div class="meta-row">
           <span><b>Domain:</b> ${escapeHtml(c.org) || '—'}</span>
           <span><b>Link:</b> <a href="${escapeHtml(c.link)}" target="_blank" rel="noopener">${escapeHtml(c.link)}</a></span>
+          <span><b>Derived from:</b> ${escapeHtml(c.derivedFrom) || 'OWASP GenAI Security Project'}</span>
         </div>
         ${c.snippet ? `<div class="snippet">"${escapeHtml(c.snippet)}"</div>` : ''}
         <div class="card-actions">
@@ -246,6 +247,7 @@
         + (c.languageLabel ? ' (' + c.languageLabel + ')' : '')
         + (c.conferenceName ? ' — matched alongside "' + c.conferenceName + '"' : '')
         + '. Query: ' + (c.matchedQuery || '')
+        + '. Derived from: ' + (c.derivedFrom || 'OWASP GenAI Security Project')
         + (c.snippet ? ('\n\n"' + c.snippet + '"') : ''),
     };
   }

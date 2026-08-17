@@ -31,6 +31,9 @@ jobs:
           GOOGLE_TRANSLATE_API_KEY: ${{ secrets.GOOGLE_TRANSLATE_API_KEY }}
         run: python crawler/search_and_log.py
 
+      - name: Identify attribution via the OWASP GenAI Security Project MCP server
+        run: python crawler/attribute.py
+
       - name: Commit updated candidates
         run: |
           git config user.name "gsp-crawler-bot"

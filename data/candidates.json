@@ -18,7 +18,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP GenAI Security Project"
   },
   {
     "id": "c-https-github-com-owasp-asi-finbot-ctf-workstream",
@@ -39,7 +40,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP GenAI Security Project"
   },
   {
     "id": "c-https-i-314-com-article-finbot-ctf-en-html",
@@ -60,7 +62,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP GenAI Security Project"
   },
   {
     "id": "c-https-app-dealroom-co-companies-owasp-genai-security-project-finbot-ctf",
@@ -81,7 +84,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP GenAI Security Project"
   },
   {
     "id": "c-https-infosecwriteups-com-owasp-agentic-ai-ctf-finbot-demo-goal-manipulation-ad3",
@@ -102,7 +106,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP GenAI Security Project"
   },
   {
     "id": "c-https-github-com-owasp-asi-finbot-ctf-demo",
@@ -123,7 +128,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP GenAI Security Project"
   },
   {
     "id": "c-https-owasp-finbot-ctf-org",
@@ -144,7 +150,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP GenAI Security Project"
   },
   {
     "id": "c-https-huggingface-co-spaces-genaisecurityproject-owasp-aibom-generator-commit-80",
@@ -165,7 +172,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP GenAI Security Project"
   },
   {
     "id": "c-https-huggingface-co-spaces-genaisecurityproject-owasp-aibom-generator-tree-80e0",
@@ -186,7 +194,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP GenAI Security Project"
   },
   {
     "id": "c-https-huggingface-co-spaces-genaisecurityproject-owasp-aibom-generator-blob-main",
@@ -207,7 +216,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP GenAI Security Project"
   },
   {
     "id": "c-https-huggingface-co-spaces-genaisecurityproject-owasp-aibom-generator-commit-27",
@@ -228,7 +238,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP GenAI Security Project"
   },
   {
     "id": "c-https-huggingface-co-spaces-genaisecurityproject-owasp-aibom-generator-commit-25",
@@ -249,7 +260,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP GenAI Security Project"
   },
   {
     "id": "c-https-huggingface-co-spaces-genaisecurityproject-owasp-aibom-generator-blob-527f",
@@ -270,7 +282,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP GenAI Security Project"
   },
   {
     "id": "c-https-www-scworld-com-feature-aibom-generator-finds-new-home-at-owasp-to-boost-a",
@@ -291,7 +304,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP GenAI Security Project"
   },
   {
     "id": "c-https-aibuzz-blog-owasp-aibom-generator-explained",
@@ -312,7 +326,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP GenAI Security Project"
   },
   {
     "id": "c-https-owaspaibom-org-navigating-the-ai-supply-chain-the-first-tranche-of-aibom-t",
@@ -333,7 +348,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP GenAI Security Project"
   },
   {
     "id": "c-https-www-cybeats-com-blog-ai-bill-of-materials-aibom-the-complete-guide",
@@ -354,7 +370,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP GenAI Security Project"
   },
   {
     "id": "c-https-github-com-aetheris-ai-aibom-generator",
@@ -375,7 +392,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP GenAI Security Project"
   },
   {
     "id": "c-https-media-licdn-com-dms-document-media-v2-d561faqfc7zqi0w6iag-feedshare-docume",
@@ -396,7 +414,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP GenAI Security Project"
   },
   {
     "id": "c-https-csrc-nist-gov-csrc-media-presentations-2026-agentic-ai-emerging-threats-mi",
@@ -417,7 +436,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP GenAI Security Project"
   },
   {
     "id": "c-https-www-ai-redteam-com-insights-owasp-genai-exploit-round-up-report-q1-2026",
@@ -438,7 +458,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP GenAI Security Project"
   },
   {
     "id": "c-https-penaxtra-com-blog-genai-exploit-roundup-q1-2026",
@@ -459,7 +480,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP GenAI Security Project"
   },
   {
     "id": "c-https-labs-cloudsecurityalliance-org-research-csa-research-note-indirect-prompt",
@@ -480,7 +502,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP GenAI Security Project"
   },
   {
     "id": "c-https-habr-com-ru-companies-owasp-news-1024214",
@@ -501,7 +524,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP GenAI Security Project"
   },
   {
     "id": "c-https-labs-cloudsecurityalliance-org-wp-content-uploads-2026-04-csa-research-not",
@@ -522,7 +546,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP GenAI Security Project"
   },
   {
     "id": "c-https-verifywise-ai-ai-governance-library-agentic-risks-owasp-genai-exploit-roun",
@@ -543,7 +568,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP GenAI Security Project"
   },
   {
     "id": "c-https-www-acrotech-com-tw-news-details-php-id-296",
@@ -564,7 +590,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP GenAI Security Project"
   },
   {
     "id": "c-https-securityboulevard-com-2024-11-owasp-top-10-for-llm-and-new-tooling-guidanc",
@@ -585,7 +612,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP GenAI Security Project"
   },
   {
     "id": "c-https-www-prnewswire-com-news-releases-owasp-dramatically-expands-genai-security",
@@ -606,7 +634,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP GenAI Security Project"
   },
   {
     "id": "c-https-www-scribd-com-document-791802434-owasp-guide-for-preparing-and-responding",
@@ -627,7 +656,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP GenAI Security Project"
   },
   {
     "id": "c-https-prompt-security-press-owasp-dramatically-expands-genai-security-guidance-w",
@@ -648,7 +678,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP GenAI Security Project"
   },
   {
     "id": "c-https-cisomarketplace-com-uploads-owasp-top10-for-llm-guide-for-preparing-and-re",
@@ -669,7 +700,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP GenAI Security Project"
   },
   {
     "id": "c-https-blog-barracuda-com-2024-12-17-owasp-guidance-deepfakes",
@@ -690,7 +722,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP GenAI Security Project"
   },
   {
     "id": "c-https-www-adaptivesecurity-com-blog-deepfake-incident-response",
@@ -711,7 +744,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP GenAI Security Project"
   },
   {
     "id": "c-https-www-titanhq-com-security-awareness-training-guide-mitigate-deepfakes",
@@ -732,7 +766,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP GenAI Security Project"
   },
   {
     "id": "c-https-www-usd-de-owasp-leitfaden-anbieter-security-analysen-ki-systeme",
@@ -753,7 +788,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "Vendor Evaluation Criteria for AI Red Teaming Providers & Tooling"
   },
   {
     "id": "c-https-www-helpnetsecurity-com-2026-02-12-owasp-ai-red-teaming-vendors",
@@ -774,7 +810,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "Vendor Evaluation Criteria for AI Red Teaming Providers & Tooling"
   },
   {
     "id": "c-https-studylib-net-doc-28373079-vendor-evaluation-criteria-for-ai-red-teaming-pr",
@@ -795,7 +832,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "Vendor Evaluation Criteria for AI Red Teaming Providers & Tooling"
   },
   {
     "id": "c-https-www-google-com-goto-url-caesywhur6pnf6k6rqokgit8b9qr5etgm7hp7v1orleoa8vuus",
@@ -816,7 +854,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "Vendor Evaluation Criteria for AI Red Teaming Providers & Tooling"
   },
   {
     "id": "c-https-verifywise-ai-ai-governance-library-risk-taxonomies-and-threat-models-owas",
@@ -837,7 +876,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "Vendor Evaluation Criteria for AI Red Teaming Providers & Tooling"
   },
   {
     "id": "c-https-www-usd-de-en-owasp-ai-red-teaming-provider-criteria",
@@ -858,7 +898,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "Vendor Evaluation Criteria for AI Red Teaming Providers & Tooling"
   },
   {
     "id": "c-https-www-aigl-blog-vendor-evaluation-criteria-for-ai-red-teaming-providers-tool",
@@ -879,7 +920,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "Vendor Evaluation Criteria for AI Red Teaming Providers & Tooling"
   },
   {
     "id": "c-https-mindgard-ai-blog-best-ai-security-tools-for-llm-and-genai",
@@ -900,7 +942,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP GenAI Security Project"
   },
   {
     "id": "c-https-www-aquasec-com-blog-owasp-llm-genai-security-landscape",
@@ -921,7 +964,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP GenAI Security Project"
   },
   {
     "id": "c-https-mindgard-ai-resources-analyst-report-owasp-llm-and-generative-ai-security",
@@ -942,7 +986,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP GenAI Security Project"
   },
   {
     "id": "c-https-dpo-india-com-resources-generative-artificial-intelligence-details-genai-s",
@@ -963,7 +1008,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP GenAI Security Project"
   },
   {
     "id": "c-https-evoailabs-medium-com-navigating-the-new-frontier-of-ai-security-a-deep-div",
@@ -984,7 +1030,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP GenAI Security Project"
   },
   {
     "id": "c-https-www-scribd-com-document-1020607180-cheat-sheet-gen-ai-security-solution-la",
@@ -1005,7 +1052,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP GenAI Security Project"
   },
   {
     "id": "c-https-elevateconsult-com-insights-ai-security-solutions-for-llm-genai-apps-whats",
@@ -1026,7 +1074,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP GenAI Security Project"
   },
   {
     "id": "c-https-www-aquasec-com-p-26665",
@@ -1047,7 +1096,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP GenAI Security Project"
   },
   {
     "id": "c-https-www-ibm-com-think-insights-agentic-ai-security",
@@ -1068,7 +1118,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP GenAI Security Project"
   },
   {
     "id": "c-https-blogs-nvidia-com-blog-agentic-ai-cybersecurity",
@@ -1089,7 +1140,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP GenAI Security Project"
   },
   {
     "id": "c-https-www-ansa-co-insight-agentic-security-market-landscape",
@@ -1110,7 +1162,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP GenAI Security Project"
   },
   {
     "id": "c-https-www-truefoundry-com-blog-enterprise-ai-agent-security-solutions",
@@ -1131,7 +1184,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP GenAI Security Project"
   },
   {
     "id": "c-https-arxiv-org-html-2603-11088v1",
@@ -1152,7 +1206,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP GenAI Security Project"
   },
   {
     "id": "c-https-www-kuppingercole-com-research-an82020-navigating-the-agentic-ai-security",
@@ -1173,7 +1228,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP GenAI Security Project"
   },
   {
     "id": "c-https-www-linx-security-blog-top-agentic-ai-security-solutions",
@@ -1194,7 +1250,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP GenAI Security Project"
   },
   {
     "id": "c-https-www-marketsandmarkets-com-market-reports-agentic-ai-security-market-970172",
@@ -1215,7 +1272,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP GenAI Security Project"
   },
   {
     "id": "c-https-www-huntress-com-cybersecurity-101-topic-agentic-ai-security",
@@ -1236,7 +1294,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP GenAI Security Project"
   },
   {
     "id": "c-https-www-paloaltonetworks-com-cyberpedia-agentic-ai-security-solutions",
@@ -1257,7 +1316,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP GenAI Security Project"
   },
   {
     "id": "c-https-zenity-io-use-cases-business-needs-agentic-ai",
@@ -1278,7 +1338,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "State of Agentic AI Security and Governance v2.01"
   },
   {
     "id": "c-https-arxiv-org-html-2601-05293v1",
@@ -1299,7 +1360,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "State of Agentic AI Security and Governance v2.01"
   },
   {
     "id": "c-https-labs-cloudsecurityalliance-org-research-csa-research-note-ai-agent-governa",
@@ -1320,7 +1382,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "State of Agentic AI Security and Governance v2.01"
   },
   {
     "id": "c-https-arxiv-org-html-2510-23883v2",
@@ -1341,7 +1404,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "State of Agentic AI Security and Governance v2.01"
   },
   {
     "id": "c-https-arxiv-org-html-2605-16471",
@@ -1362,7 +1426,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "State of Agentic AI Security and Governance v2.01"
   },
   {
     "id": "c-https-labs-cloudsecurityalliance-org-research-csa-research-note-agentic-ai-gover",
@@ -1383,7 +1448,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "State of Agentic AI Security and Governance v2.01"
   },
   {
     "id": "c-https-elevateconsult-com-insights-state-of-agentic-ai-security-and-governance-in",
@@ -1404,7 +1470,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "State of Agentic AI Security and Governance v2.01"
   },
   {
     "id": "c-https-labs-cloudsecurityalliance-org-research-csa-research-note-owasp-agentic-ai",
@@ -1425,7 +1492,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "State of Agentic AI Security and Governance v2.01"
   },
   {
     "id": "c-https-static1-squarespace-com-static-657fbacefee1961d9862231b-t-689bd91d7c72ec10",
@@ -1446,7 +1514,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "State of Agentic AI Security and Governance v2.01"
   },
   {
     "id": "c-https-www-thomsonreuters-com-en-institute-articles-safeguarding-agentic-ai",
@@ -1467,7 +1536,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "State of Agentic AI Security and Governance v2.01"
   },
   {
     "id": "c-https-www-strata-io-blog-agentic-identity-agentic-ai-governance-how-to-approach",
@@ -1488,7 +1558,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "State of Agentic AI Security and Governance v2.01"
   },
   {
     "id": "c-https-www-mckinsey-com-capabilities-risk-and-resilience-our-insights-deploying-a",
@@ -1509,7 +1580,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "State of Agentic AI Security and Governance v2.01"
   },
   {
     "id": "c-https-www-paloaltonetworks-com-cyberpedia-what-is-agentic-ai-governance",
@@ -1530,7 +1602,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "State of Agentic AI Security and Governance v2.01"
   },
   {
     "id": "c-https-cloudsecurityalliance-org-artifacts-the-state-of-ai-security-and-governanc",
@@ -1551,7 +1624,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "State of Agentic AI Security and Governance v2.01"
   },
   {
     "id": "c-https-mediate-com-state-of-agentic-ai-security-and-governance-summary-for-legal",
@@ -1572,7 +1646,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "State of Agentic AI Security and Governance v2.01"
   },
   {
     "id": "c-https-www-prnewswire-com-news-releases-owasp-genai-security-project-releases-top",
@@ -1593,7 +1668,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP GenAI COMPASS RunBook (+ companion spreadsheet)"
   },
   {
     "id": "c-https-www-owasp-community-projects-genai-security",
@@ -1614,7 +1690,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP GenAI COMPASS RunBook (+ companion spreadsheet)"
   },
   {
     "id": "c-https-elevateconsult-com-insights-ai-security-best-practices-owasp-genai",
@@ -1635,7 +1712,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP GenAI COMPASS RunBook (+ companion spreadsheet)"
   },
   {
     "id": "c-https-myna-com-insight-understanding-owasp-gen-ai-threat-defense-compass",
@@ -1656,7 +1734,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP GenAI COMPASS RunBook (+ companion spreadsheet)"
   },
   {
     "id": "c-https-www-reddit-com-r-mcp-comments-1mvp3ma-mcp-security-best-practices-how-to-p",
@@ -1677,7 +1756,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "Cheat Sheet: A Practical Guide for Securely Using Third-Party MCP Servers"
   },
   {
     "id": "c-https-www-infracloud-io-blogs-securing-mcp-servers",
@@ -1698,7 +1778,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "Cheat Sheet: A Practical Guide for Securely Using Third-Party MCP Servers"
   },
   {
     "id": "c-https-panther-com-blog-how-to-secure-an-mcp-server",
@@ -1719,7 +1800,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "Cheat Sheet: A Practical Guide for Securely Using Third-Party MCP Servers"
   },
   {
     "id": "c-https-mailtrap-io-blog-mcp-server-security",
@@ -1740,7 +1822,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "Cheat Sheet: A Practical Guide for Securely Using Third-Party MCP Servers"
   },
   {
     "id": "c-https-storage-ghost-io-c-44-95-449506ca-034e-480f-9725-fcde08ef1cc1-content-file",
@@ -1761,7 +1844,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "Cheat Sheet: A Practical Guide for Securely Using Third-Party MCP Servers"
   },
   {
     "id": "c-https-www-cycognito-com-learn-ai-security-mcp-security",
@@ -1782,7 +1866,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "Cheat Sheet: A Practical Guide for Securely Using Third-Party MCP Servers"
   },
   {
     "id": "c-https-www-msbiro-net-posts-securely-using-third-party-mcp-servers",
@@ -1803,7 +1888,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "Cheat Sheet: A Practical Guide for Securely Using Third-Party MCP Servers"
   },
   {
     "id": "c-https-www-aigl-blog-a-practical-guide-for-securely-using-third-party-mcp-servers",
@@ -1824,7 +1910,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "Cheat Sheet: A Practical Guide for Securely Using Third-Party MCP Servers"
   },
   {
     "id": "c-https-techcommunity-microsoft-com-blog-azuredevcommunityblog-its-time-to-secure",
@@ -1845,7 +1932,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "A Practical Guide for Secure MCP Server Development"
   },
   {
     "id": "c-https-github-com-microsoft-mcp-for-beginners-blob-main-02-security-mcp-best-prac",
@@ -1866,7 +1954,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "A Practical Guide for Secure MCP Server Development"
   },
   {
     "id": "c-https-github-com-slowmist-mcp-security-checklist",
@@ -1887,7 +1976,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "A Practical Guide for Secure MCP Server Development"
   },
   {
     "id": "c-https-www-descope-com-blog-post-mcp-server-security-best-practices",
@@ -1908,7 +1998,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "A Practical Guide for Secure MCP Server Development"
   },
   {
     "id": "c-https-medium-com-richardhightower-securing-mcp-from-vulnerable-to-fortified-buil",
@@ -1929,7 +2020,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "A Practical Guide for Secure MCP Server Development"
   },
   {
     "id": "c-https-www-truefoundry-com-blog-mcp-server-security-best-practices",
@@ -1950,7 +2042,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "A Practical Guide for Secure MCP Server Development"
   },
   {
     "id": "c-https-github-com-microsoft-mcp-for-beginners-blob-main-02-security-mcp-security",
@@ -1971,7 +2064,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "A Practical Guide for Secure MCP Server Development"
   },
   {
     "id": "c-https-obot-ai-resources-learning-center-mcp-security",
@@ -1992,7 +2086,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "A Practical Guide for Secure MCP Server Development"
   },
   {
     "id": "c-https-www-digitalapplied-com-blog-mcp-server-security-best-practices-2026-engine",
@@ -2013,7 +2108,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "A Practical Guide for Secure MCP Server Development"
   },
   {
     "id": "c-https-vamisec-com-en-wissen-agentic-ai-security-mcp-security-secure-server-devel",
@@ -2034,7 +2130,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "A Practical Guide for Secure MCP Server Development"
   },
   {
     "id": "c-https-snyk-io-articles-building-secure-mcp-servers",
@@ -2055,7 +2152,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "A Practical Guide for Secure MCP Server Development"
   },
   {
     "id": "c-https-go-mcptotal-io-blog-a-practical-guide-to-build-secure-mcp-servers",
@@ -2076,7 +2174,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "A Practical Guide for Secure MCP Server Development"
   },
   {
     "id": "c-https-codersera-com-blog-how-to-secure-mcp-servers-2026",
@@ -2097,7 +2196,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "A Practical Guide for Secure MCP Server Development"
   },
   {
     "id": "c-https-www-scribd-com-document-1000553805-a-practical-guide-for-secure-mcp-server",
@@ -2118,7 +2218,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "A Practical Guide for Secure MCP Server Development"
   },
   {
     "id": "c-https-labs-cloudsecurityalliance-org-agentic-agentic-mcp-security-best-practices",
@@ -2139,7 +2240,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "A Practical Guide for Secure MCP Server Development"
   },
   {
     "id": "c-https-snyk-io-fr-articles-building-secure-mcp-servers",
@@ -2160,7 +2262,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "A Practical Guide for Secure MCP Server Development"
   },
   {
     "id": "c-https-bastion-tech-blog-owasp-mcp-server-security-guide-analysis",
@@ -2181,7 +2284,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "A Practical Guide for Secure MCP Server Development"
   },
   {
     "id": "c-https-cybercompliancewatch-org-owasp-mcp-server",
@@ -2202,7 +2306,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "A Practical Guide for Secure MCP Server Development"
   },
   {
     "id": "c-https-www-aigl-blog-a-practical-guide-for-secure-mcp-server-development",
@@ -2223,7 +2328,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "A Practical Guide for Secure MCP Server Development"
   },
   {
     "id": "c-https-www-ampcuscyber-com-blogs-owasp-top-10-gen-ai-security-risks",
@@ -2244,7 +2350,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "GenAI Data Security Risks and Mitigations 2026 (v1.0)"
   },
   {
     "id": "c-https-emmanuelgjr-github-io-dsgai",
@@ -2265,7 +2372,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "GenAI Data Security Risks and Mitigations 2026 (v1.0)"
   },
   {
     "id": "c-https-matematicsolutions-com-baza-wiedzy-2026-05-12-owasp-genai-data-security-ri",
@@ -2286,7 +2394,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "GenAI Data Security Risks and Mitigations 2026 (v1.0)"
   },
   {
     "id": "c-https-www-matematicsolutions-com-baza-wiedzy-pdf-2026-05-12-owasp-genai-data-sec",
@@ -2307,7 +2416,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "GenAI Data Security Risks and Mitigations 2026 (v1.0)"
   },
   {
     "id": "c-https-www-prnewswire-com-news-releases-owasp-genai-security-project-expands-ai-s",
@@ -2328,7 +2438,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "GenAI Data Security Risks and Mitigations 2026 (v1.0)"
   },
   {
     "id": "c-https-github-com-genai-security-project-genai-data-security-initiative",
@@ -2349,7 +2460,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "GenAI Data Security Risks and Mitigations 2026 (v1.0)"
   },
   {
     "id": "c-https-owaspai-org-docs-ai-security-overview",
@@ -2370,7 +2482,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "GenAI Data Security Risks and Mitigations 2026 (v1.0)"
   },
   {
     "id": "c-https-www-opsinsecurity-com-blog-owasp-genai-data-security-risks-what-enterprise",
@@ -2391,7 +2504,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "GenAI Data Security Risks and Mitigations 2026 (v1.0)"
   },
   {
     "id": "c-https-www-scribd-com-document-971579842-owasp-top-10-for-agentic-applications-20",
@@ -2412,7 +2526,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP Top 10 for Agentic Applications 2026"
   },
   {
     "id": "c-https-www-slideshare-net-slideshow-owasp-top-10-for-agentic-applications-2026-pd",
@@ -2433,7 +2548,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP Top 10 for Agentic Applications 2026"
   },
   {
     "id": "c-https-astrix-security-learn-blog-the-owasp-agentic-top-10-just-dropped-heres-wha",
@@ -2454,7 +2570,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP Top 10 for Agentic Applications 2026"
   },
   {
     "id": "c-https-www-microsoft-com-en-us-security-blog-2026-03-30-addressing-the-owasp-top",
@@ -2475,7 +2592,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP Top 10 for Agentic Applications 2026"
   },
   {
     "id": "c-https-netevo-com-au-resources-owasp-top-10-for-agentic-applications",
@@ -2496,7 +2614,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP Top 10 for Agentic Applications 2026"
   },
   {
     "id": "c-https-microsoft-github-io-agent-governance-toolkit-compliance-owasp-agentic-top1",
@@ -2517,7 +2636,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP Top 10 for Agentic Applications 2026"
   },
   {
     "id": "c-https-idanhabler-medium-com-demystifying-the-owasp-top-10-for-agentic-applicatio",
@@ -2538,7 +2658,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP Top 10 for Agentic Applications 2026"
   },
   {
     "id": "c-https-auth0-com-blog-owasp-top-10-agentic-applications-lessons",
@@ -2559,7 +2680,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP Top 10 for Agentic Applications 2026"
   },
   {
     "id": "c-https-www-f5-com-glossary-owasp-top-10-for-agentic-ai-applications",
@@ -2580,7 +2702,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP Top 10 for Agentic Applications 2026"
   },
   {
     "id": "c-https-zenity-io-blog-the-owasp-top-10-for-agentic-applications",
@@ -2601,7 +2724,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP Top 10 for Agentic Applications 2026"
   },
   {
     "id": "c-https-www-promptfoo-dev-docs-red-team-owasp-agentic-ai",
@@ -2622,7 +2746,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP Top 10 for Agentic Applications 2026"
   },
   {
     "id": "c-https-cycode-com-blog-owasp-top-10-agentic-applications",
@@ -2643,7 +2768,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP Top 10 for Agentic Applications 2026"
   },
   {
     "id": "c-https-www-reddit-com-r-pwnhub-comments-1s733f2-owasp-top-10-for-llms-what-every",
@@ -2664,7 +2790,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP GenAI Security Project"
   },
   {
     "id": "c-https-www-oligo-security-academy-owasp-top-10-llm-updated-2025-examples-and-miti",
@@ -2685,7 +2812,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP GenAI Security Project"
   },
   {
     "id": "c-https-workos-com-blog-the-owasp-top-10-for-llm-applications-what-developers-ship",
@@ -2706,7 +2834,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP GenAI Security Project"
   },
   {
     "id": "c-https-vamisec-com-en-wissen-agentic-ai-security-owasp-llm-top-10",
@@ -2727,7 +2856,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP GenAI Security Project"
   },
   {
     "id": "c-https-securiti-ai-owasp-top-10-for-llms",
@@ -2748,7 +2878,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP Top 10 for LLM Applications 2026"
   },
   {
     "id": "c-https-altaysec-com-tr-en-arastirmalar-owasp-llm-top10-2026",
@@ -2769,7 +2900,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP Top 10 for LLM Applications 2026"
   },
   {
     "id": "c-https-hackerdna-com-blog-owasp-llm-top-10",
@@ -2790,7 +2922,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP Top 10 for LLM Applications 2026"
   },
   {
     "id": "c-https-cybersecuritynews-com-owasp-genai-llm-top-10-2026",
@@ -2811,7 +2944,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP Top 10 for LLM Applications 2026"
   },
   {
     "id": "c-https-github-com-genai-security-project-genai-llm-top10",
@@ -2832,7 +2966,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP Top 10 for LLM Applications 2026"
   },
   {
     "id": "c-https-www-lasso-security-resources-owasp-top-10-risks-and-mitigation-for-agentic",
@@ -2853,7 +2988,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP Top 10 for LLM Applications 2026"
   },
   {
     "id": "c-https-www-trendmicro-com-en-us-what-is-ai-owasp-top-10-html",
@@ -2874,7 +3010,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP Top 10 for LLM Applications 2026"
   },
   {
     "id": "c-https-www-gravitee-io-blog-owasp-top-10-for-llm-applications-2025-a-practical-gu",
@@ -2895,7 +3032,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP Top 10 for LLM Applications 2026"
   },
   {
     "id": "c-https-www-promptfoo-dev-docs-red-team-owasp-llm-top-10",
@@ -2916,7 +3054,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP Top 10 for LLM Applications 2026"
   },
   {
     "id": "c-https-arxiv-org-abs-2601-18105",
@@ -2937,7 +3076,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP Top 10 for LLM Applications 2026"
   },
   {
     "id": "c-https-github-com-owasp-www-project-top-10-for-large-language-model-applications",
@@ -2958,7 +3098,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP Top 10 for LLM Applications 2026"
   },
   {
     "id": "c-https-learn-snyk-io-learning-paths-owasp-top-10-llm",
@@ -2979,7 +3120,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP Top 10 for LLM Applications 2026"
   },
   {
     "id": "c-https-aembit-io-blog-owasp-top-10-llm-risks-explained",
@@ -3000,7 +3142,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP Top 10 for LLM Applications 2026"
   },
   {
     "id": "c-https-docs-aws-amazon-com-prescriptive-guidance-latest-agentic-ai-security-owasp",
@@ -3021,7 +3164,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP Top 10 for LLM Applications 2026"
   },
   {
     "id": "c-https-www-paloaltonetworks-com-resources-infographics-llm-applications-owasp-10",
@@ -3042,7 +3186,8 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP Top 10 for LLM Applications 2026"
   },
   {
     "id": "c-https-www-cloudflare-com-learning-ai-owasp-top-10-risks-for-llms",
@@ -3063,6 +3208,7 @@
     "language": "en",
     "languageLabel": "English (US)",
     "region": "English (default)",
-    "matchType": "resource"
+    "matchType": "resource",
+    "derivedFrom": "OWASP Top 10 for LLM Applications 2026"
   }
 ]

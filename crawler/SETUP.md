@@ -79,6 +79,31 @@ quotes work best. Also set `engines:` to the backends you've configured.
 - Each run commits an updated `data/candidates.json` if it found anything
   new. Refresh the site to see new candidates under "Needs review."
 
+## Attribution
+
+After the crawl, `crawler/attribute.py` runs automatically as a second
+workflow step and sets each candidate's `derivedFrom` field -- which
+specific OWASP GenAI Security Project resource (e.g. "OWASP Top 10 for LLM
+Applications 2026") it appears to be reuse of, shown on its card and
+carried into the ledger entry's notes when promoted. Defaults to the
+generic "OWASP GenAI Security Project" when no specific resource applies
+(e.g. it matched a tool/repo like the AIBOM Generator rather than a
+published document, or the corpus doesn't currently have that resource).
+
+This is grounded in `crawler/attribute.py`'s `QUERY_TO_RESOURCE_ID` mapping
+(which crawler query found the candidate → which corpus `resource_id`),
+not a fresh fuzzy search per candidate -- the MCP server's `search_corpus`
+does substring-ish matching that produced false positives in testing (a
+generic query like "AIBOM Generator" incorrectly matched an unrelated
+document). The mapping is reviewed by hand; the actual displayed title
+still comes live from the MCP server's `list_resources` every run, so it
+won't go stale even though the mapping itself is static. If you add new
+queries to `queries.yaml` that should attribute to a specific resource, add
+a matching entry to `QUERY_TO_RESOURCE_ID`.
+
+No API key needed -- the OWASP GenAI Security Project MCP server
+(`genai-security-advisor-mcp`) is public, no auth required.
+
 ## Run it locally instead (optional)
 
 ```bash
@@ -87,6 +112,7 @@ pip install -r requirements.txt
 export SERPAPI_KEY=your_key      # whichever engines you're using
 export PERPLEXITY_API_KEY=your_key
 python search_and_log.py
+python attribute.py
 ```
 
 ## Adding another engine later
