@@ -56,8 +56,33 @@ results_per_query: 10
 #
 # COST WARNING: every enabled language roughly multiplies your total query
 # count (languages × resource titles × engines). Free tiers are small
-# (Google CSE: 100/day, SerpAPI: 100/month). Start with a few languages,
-# check your usage, then expand. Toggle with `enabled: true/false` below.
+# (SerpAPI: 100/month). Start with a few languages, check your usage, then
+# expand.
+#
+# Two levels of control:
+#   1. `enabled: true/false` on each language entry below -- fine-grained,
+#      per-language.
+#   2. `region_groups:` right below -- a master switch per `region:` value.
+#      A language only actually runs if BOTH its own `enabled` is true AND
+#      its region's group switch is true. This lets you flip a whole
+#      region (e.g. all of Europe) on or off with one line instead of
+#      editing each language entry, while still being able to fine-tune
+#      which languages within an active region run.
+#
+# Everything below is currently gated off except English -- to bring back
+# the original starter set (Spanish/French/German/Japanese/Chinese
+# Simplified/Hindi/Portuguese-Brazil), flip the matching region_groups
+# entries to `true`; their individual `enabled:` flags are already set
+# for that starter set.
+
+region_groups:
+  "English (default)": true
+  Europe: false
+  Japan: false
+  China: false
+  India: false
+  "South America": false
+  "Other Asia": false
 
 translate_modifiers: false
 modifier_terms:
@@ -71,37 +96,34 @@ languages:
   # --- Baseline ---
   - { code: en, country: US, region: "English (default)",  label: "English (US)",        enabled: true }
 
-  # --- Europe ---
-  # Disabled to fit SerpAPI's free tier (100 searches/month) -- each
-  # enabled language multiplies Pass 1's query count. Re-enable once on a
-  # paid plan; see the cost note above.
-  - { code: es, country: ES, region: Europe, label: "Spanish (Spain)",     enabled: false }
-  - { code: fr, country: FR, region: Europe, label: "French",              enabled: false }
-  - { code: de, country: DE, region: Europe, label: "German",              enabled: false }
+  # --- Europe (region_groups.Europe must also be true) ---
+  - { code: es, country: ES, region: Europe, label: "Spanish (Spain)",     enabled: true }
+  - { code: fr, country: FR, region: Europe, label: "French",              enabled: true }
+  - { code: de, country: DE, region: Europe, label: "German",              enabled: true }
   - { code: it, country: IT, region: Europe, label: "Italian",             enabled: false }
   - { code: pt, country: PT, region: Europe, label: "Portuguese (Portugal)", enabled: false }
   - { code: nl, country: NL, region: Europe, label: "Dutch",               enabled: false }
   - { code: pl, country: PL, region: Europe, label: "Polish",              enabled: false }
   - { code: ru, country: RU, region: Europe, label: "Russian",             enabled: false }
 
-  # --- Japan ---
-  - { code: ja, country: JP, region: Japan, label: "Japanese",             enabled: false }
+  # --- Japan (region_groups.Japan must also be true) ---
+  - { code: ja, country: JP, region: Japan, label: "Japanese",             enabled: true }
 
-  # --- China ---
-  - { code: zh-CN, country: CN, region: China, label: "Chinese (Simplified)",  enabled: false }
+  # --- China (region_groups.China must also be true) ---
+  - { code: zh-CN, country: CN, region: China, label: "Chinese (Simplified)",  enabled: true }
   - { code: zh-TW, country: TW, region: China, label: "Chinese (Traditional)", enabled: false }
 
-  # --- India ---
-  - { code: hi, country: IN, region: India, label: "Hindi",                enabled: false }
+  # --- India (region_groups.India must also be true) ---
+  - { code: hi, country: IN, region: India, label: "Hindi",                enabled: true }
   - { code: en, country: IN, region: India, label: "English (India)",      enabled: false }
 
-  # --- South America ---
-  - { code: pt, country: BR, region: "South America", label: "Portuguese (Brazil)",   enabled: false }
+  # --- South America (region_groups."South America" must also be true) ---
+  - { code: pt, country: BR, region: "South America", label: "Portuguese (Brazil)",   enabled: true }
   - { code: es, country: AR, region: "South America", label: "Spanish (Argentina)",   enabled: false }
   - { code: es, country: MX, region: "South America", label: "Spanish (Mexico)",      enabled: false }
   - { code: es, country: CO, region: "South America", label: "Spanish (Colombia)",    enabled: false }
 
-  # --- Other Asia ---
+  # --- Other Asia (region_groups."Other Asia" must also be true) ---
   - { code: ko, country: KR, region: "Other Asia", label: "Korean",     enabled: false }
   - { code: vi, country: VN, region: "Other Asia", label: "Vietnamese", enabled: false }
   - { code: th, country: TH, region: "Other Asia", label: "Thai",       enabled: false }

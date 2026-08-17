@@ -167,7 +167,16 @@ def main():
     resource_titles = config.get("queries", [])
     excluded_domains = [d.lower() for d in config.get("excluded_domains", [])]
     enabled_engines = config.get("engines", ["serpapi"])
-    languages = [l for l in config.get("languages", []) if l.get("enabled")]
+    # A language runs only if BOTH its own `enabled` flag AND its region's
+    # region_groups switch are true -- lets queries.yaml flip a whole
+    # region (e.g. all of Europe) on/off with one line. A region with no
+    # entry in region_groups defaults to enabled, so existing configs
+    # without a region_groups section keep working unchanged.
+    region_groups = config.get("region_groups", {})
+    languages = [
+        l for l in config.get("languages", [])
+        if l.get("enabled") and region_groups.get(l.get("region"), True)
+    ]
     if not languages:
         languages = [{"code": "en", "country": "US", "region": "English (default)", "label": "English (US)"}]
 
