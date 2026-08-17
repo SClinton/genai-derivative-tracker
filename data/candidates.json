@@ -1617,27 +1617,6 @@
     "matchType": "resource"
   },
   {
-    "id": "c-https-github-com-genai-security-project",
-    "source": "crawler",
-    "engine": "perplexity",
-    "status": "unreviewed",
-    "title": "",
-    "type": "Other",
-    "org": "github.com",
-    "location": "https://github.com/genai-security-project",
-    "link": "https://github.com/genai-security-project",
-    "snippet": "- https://genai.owasp.org/resources/ \u2014 The OWASP Gen AI Security Project resources archive; includes **\u201cOWASP GenAI Security Project Threat Defense COMPASS 1.0\u201d** and describes it as a unified AI threat resilience dashboard.[4]\n- https://genai.owasp.org/ \u2014 The project home page for the OWASP Gen AI ",
-    "matchedQuery": "\"\"OWASP GenAI Security Project\" \"Threat Defense COMPASS\"\"",
-    "date": null,
-    "attr": "unclear",
-    "notes": "Auto-discovered. Needs human review before counting as a confirmed derivative work.",
-    "foundAt": "2026-08-17T13:40:17.026401+00:00",
-    "language": "en",
-    "languageLabel": "English (US)",
-    "region": "English (default)",
-    "matchType": "resource"
-  },
-  {
     "id": "c-https-elevateconsult-com-insights-ai-security-best-practices-owasp-genai",
     "source": "crawler",
     "engine": "google",

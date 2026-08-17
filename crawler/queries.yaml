@@ -245,14 +245,21 @@ queries:
   - "\"FinBot\" \"Capture The Flag\" OWASP"
   - "\"GenAI Security Advisor\" OWASP"
 
-# Domains to always ignore (official channels + noisy aggregators).
-# Matches the domain itself and any subdomain.
+# Domains/paths to always ignore (official channels + noisy aggregators).
+# Two forms:
+#   - "domain.com"          matches the whole domain + any subdomain.
+#   - "domain.com/some/path" matches only URLs under that path -- use this
+#     for the project's own channel/org on a shared platform (YouTube,
+#     LinkedIn, GitHub) so third-party content on the same platform isn't
+#     also excluded. A bare "youtube.com"/"linkedin.com" would block ALL
+#     YouTube/LinkedIn content, including genuine third-party reuse there.
 excluded_domains:
   - genai.owasp.org
   - owasp.org
-  - youtube.com
+  - github.com/genai-security-project
+  - youtube.com/@GenAISecurityProject
   - youtu.be
-  - linkedin.com
+  - linkedin.com/company/owasp-top-10-for-large-language-model-applications
   - twitter.com
   - x.com
   - facebook.com

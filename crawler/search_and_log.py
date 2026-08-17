@@ -65,8 +65,29 @@ def domain_of(url):
 
 
 def is_excluded(url, excluded_domains):
+    """Each entry in excluded_domains is either a bare domain ("owasp.org",
+    matches the whole domain + subdomains) or a domain + path prefix
+    ("github.com/genai-security-project", matches only URLs under that
+    path) -- lets project-owned channels/orgs on shared platforms
+    (YouTube, LinkedIn, GitHub) be excluded without blocking third-party
+    content on the same platform, which is what a bare "youtube.com"
+    entry would otherwise do."""
     d = domain_of(url)
-    return any(d == ex or d.endswith("." + ex) for ex in excluded_domains)
+    path = urlparse(url).path.rstrip("/").lower()
+
+    for ex in excluded_domains:
+        if "/" in ex:
+            ex_domain, ex_path = ex.split("/", 1)
+            ex_path = "/" + ex_path.rstrip("/")
+        else:
+            ex_domain, ex_path = ex, None
+
+        if d != ex_domain and not d.endswith("." + ex_domain):
+            continue
+        if ex_path is None or path == ex_path or path.startswith(ex_path + "/"):
+            return True
+
+    return False
 
 
 def guess_type(url, title, snippet):

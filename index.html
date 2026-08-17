@@ -188,11 +188,37 @@
         </div>
         ${c.snippet ? `<div class="snippet">"${escapeHtml(c.snippet)}"</div>` : ''}
         <div class="card-actions">
-          <button class="btn" data-caction="promote" data-id="${c.id}">Promote to ledger</button>
+          <button class="btn" data-caction="quickadd" data-id="${c.id}" title="Add straight to the ledger using the crawler's data as-is — no review step">Quick add to ledger</button>
+          <button class="btn secondary" data-caction="promote" data-id="${c.id}">Promote to ledger&hellip;</button>
           <button class="btn secondary" data-caction="dismiss" data-id="${c.id}">Dismiss</button>
         </div>
       </div>
     `).join('');
+  }
+
+  const LEDGER_TYPES = ['Presentation','Marketing document','Published article','Conference session','Podcast','Training class','Other'];
+
+  function todayISO(){
+    return new Date().toISOString().slice(0,10);
+  }
+
+  // Shared with the manual "Promote to ledger…" flow below, so quick-add
+  // builds the exact same title/type/org/location/link/notes a human would
+  // see pre-filled in the form — the only difference is date/attr get a
+  // default instead of asking, and it skips the form entirely.
+  function candidateToFields(c){
+    return {
+      title: c.title || '',
+      type: LEDGER_TYPES.includes(c.type) ? c.type : 'Other',
+      org: c.org || '',
+      location: c.link || '',
+      link: c.link || '',
+      notes: 'Auto-discovered via crawler'
+        + (c.languageLabel ? ' (' + c.languageLabel + ')' : '')
+        + (c.conferenceName ? ' — matched alongside "' + c.conferenceName + '"' : '')
+        + '. Query: ' + (c.matchedQuery || '')
+        + (c.snippet ? ('\n\n"' + c.snippet + '"') : ''),
+    };
   }
 
   document.getElementById('candidates').addEventListener('click', (ev) => {
@@ -206,17 +232,33 @@
       dismissed.add(id);
       saveIdSet(DISMISSED_KEY, dismissed);
       renderCandidates();
+    } else if(btn.dataset.caction === 'quickadd'){
+      // Uses the candidate's own publish date if the crawler found one;
+      // otherwise today. Crawler-found candidates don't currently carry a
+      // publish date (search engines don't reliably return one), so this
+      // will fall back to today's date for essentially everything right
+      // now — the date field just isn't a guess either way.
+      entries.push({
+        id: 'e' + Date.now() + Math.random().toString(36).slice(2,7),
+        seq: nextCaseId(),
+        createdAt: Date.now(),
+        ...candidateToFields(c),
+        date: c.date || todayISO(),
+        attr: 'unclear',
+      });
+      promoted.add(id);
+      saveIdSet(PROMOTED_KEY, promoted);
+      save(entries);
+      renderCandidates();
+      renderAll();
     } else if(btn.dataset.caction === 'promote'){
-      document.getElementById('f-title').value = c.title || '';
-      document.getElementById('f-type').value = ['Presentation','Marketing document','Published article','Conference session','Podcast','Training class','Other'].includes(c.type) ? c.type : 'Other';
-      document.getElementById('f-org').value = c.org || '';
-      document.getElementById('f-location').value = c.link || '';
-      document.getElementById('f-link').value = c.link || '';
-      document.getElementById('f-notes').value = 'Auto-discovered via crawler'
-        + (c.languageLabel ? ' (' + c.languageLabel + ')' : '')
-        + (c.conferenceName ? ' — matched alongside "' + c.conferenceName + '"' : '')
-        + '. Query: ' + (c.matchedQuery || '')
-        + (c.snippet ? ('\n\n"' + c.snippet + '"') : '');
+      const fields = candidateToFields(c);
+      document.getElementById('f-title').value = fields.title;
+      document.getElementById('f-type').value = fields.type;
+      document.getElementById('f-org').value = fields.org;
+      document.getElementById('f-location').value = fields.location;
+      document.getElementById('f-link').value = fields.link;
+      document.getElementById('f-notes').value = fields.notes;
       document.getElementById('f-attr').value = 'unclear';
       pendingPromoteId = id;
       document.getElementById('addBtn').textContent = 'Add to ledger';

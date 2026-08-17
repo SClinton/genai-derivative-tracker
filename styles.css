@@ -181,7 +181,7 @@ input:focus, select:focus, textarea:focus{
 }
 .meta-row span b{ color: var(--ink); font-weight: 500; }
 .notes{ font-size: 13.5px; color: var(--ink); margin-top: 6px; }
-.card-actions{ display:flex; gap: 8px; margin-top: 12px; }
+.card-actions{ display:flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
 .card-actions .btn{ padding: 6px 12px; font-size: 11px; }
 
 .stamp{
