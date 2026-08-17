@@ -150,6 +150,11 @@
   let promoted = loadIdSet(PROMOTED_KEY);
   let candidates = [];
 
+  // Bulk-select state -- deliberately not persisted to localStorage,
+  // selection is a transient UI concept that should reset on reload.
+  let selectedCandidates = new Set();
+  let selectedLedger = new Set();
+
   async function loadCandidates(){
     try{
       const res = await fetch('data/candidates.json', { cache: 'no-store' });
@@ -161,8 +166,23 @@
     renderCandidates();
   }
 
+  function bulkToolbar(idPrefix, visibleIds, selectedSet, actionsHtml){
+    const allSelected = visibleIds.length > 0 && visibleIds.every(id => selectedSet.has(id));
+    return `
+      <div class="bulk-toolbar">
+        <label><input type="checkbox" class="${idPrefix}-select-all" ${allSelected ? 'checked' : ''}> Select all (${visibleIds.length})</label>
+        <span class="bulk-count">${selectedSet.size ? selectedSet.size + ' selected' : ''}</span>
+        <div class="bulk-actions">${actionsHtml}</div>
+      </div>
+    `;
+  }
+
   function renderCandidates(){
     const visible = candidates.filter(c => !dismissed.has(c.id) && !promoted.has(c.id));
+    const visibleIds = visible.map(c => c.id);
+    // Drop any selected id that's no longer visible (dismissed/promoted since selection).
+    selectedCandidates = new Set([...selectedCandidates].filter(id => visibleIds.includes(id)));
+
     document.getElementById('candidateCountLine').textContent =
       candidates.length === 0
         ? 'No crawler data loaded yet — run the GitHub Action, or add entries manually below.'
@@ -174,12 +194,21 @@
         `<div class="empty">Nothing left to review right now.</div>`;
       return;
     }
-    container.innerHTML = visible.map(c => `
+
+    const toolbar = bulkToolbar('cand', visibleIds, selectedCandidates, `
+      <button class="btn" data-bulk="quickadd" type="button" ${selectedCandidates.size ? '' : 'disabled'}>Quick add selected</button>
+      <button class="btn danger" data-bulk="delete" type="button" ${selectedCandidates.size ? '' : 'disabled'}>Delete selected</button>
+    `);
+
+    container.innerHTML = toolbar + visible.map(c => `
       <div class="card candidate" data-id="${c.id}">
         <div class="card-top">
-          <div>
-            <div class="card-id"><span class="candidate-tag">Unreviewed</span> &middot; <span class="type-tag">${escapeHtml(c.type || 'Other')}</span>${c.engine ? ` &middot; <span class="type-tag">${escapeHtml(c.engine)}</span>` : ''}${c.languageLabel && c.languageLabel !== 'English (US)' ? ` &middot; <span class="type-tag">${escapeHtml(c.languageLabel)}</span>` : ''}${c.conferenceName ? ` &middot; <span class="type-tag">${escapeHtml(c.conferenceName)}</span>` : ''}</div>
-            <div class="card-title">${escapeHtml(c.title) || '(untitled)'}</div>
+          <div class="card-top-left">
+            <label class="select-check"><input type="checkbox" class="cand-select" data-id="${c.id}" ${selectedCandidates.has(c.id) ? 'checked' : ''}></label>
+            <div>
+              <div class="card-id"><span class="candidate-tag">Unreviewed</span> &middot; <span class="type-tag">${escapeHtml(c.type || 'Other')}</span>${c.engine ? ` &middot; <span class="type-tag">${escapeHtml(c.engine)}</span>` : ''}${c.languageLabel && c.languageLabel !== 'English (US)' ? ` &middot; <span class="type-tag">${escapeHtml(c.languageLabel)}</span>` : ''}${c.conferenceName ? ` &middot; <span class="type-tag">${escapeHtml(c.conferenceName)}</span>` : ''}</div>
+              <div class="card-title">${escapeHtml(c.title) || '(untitled)'}</div>
+            </div>
           </div>
         </div>
         <div class="meta-row">
@@ -221,7 +250,56 @@
     };
   }
 
+  document.getElementById('candidates').addEventListener('change', (ev) => {
+    if(ev.target.classList.contains('cand-select-all')){
+      const visibleIds = candidates.filter(c => !dismissed.has(c.id) && !promoted.has(c.id)).map(c => c.id);
+      if(ev.target.checked) visibleIds.forEach(id => selectedCandidates.add(id));
+      else selectedCandidates.clear();
+      renderCandidates();
+    } else if(ev.target.classList.contains('cand-select')){
+      const id = ev.target.dataset.id;
+      if(ev.target.checked) selectedCandidates.add(id);
+      else selectedCandidates.delete(id);
+      renderCandidates();
+    }
+  });
+
   document.getElementById('candidates').addEventListener('click', (ev) => {
+    const bulkBtn = ev.target.closest('button[data-bulk]');
+    if(bulkBtn){
+      const ids = [...selectedCandidates];
+      if(ids.length === 0) return;
+
+      if(bulkBtn.dataset.bulk === 'quickadd'){
+        ids.forEach(id => {
+          const c = candidates.find(x => x.id === id);
+          if(!c) return;
+          entries.push({
+            id: 'e' + Date.now() + Math.random().toString(36).slice(2,7),
+            seq: nextCaseId(),
+            createdAt: Date.now(),
+            ...candidateToFields(c),
+            date: c.date || todayISO(),
+            attr: 'unclear',
+          });
+          promoted.add(id);
+        });
+        saveIdSet(PROMOTED_KEY, promoted);
+        save(entries);
+        selectedCandidates.clear();
+        renderCandidates();
+        renderAll();
+      } else if(bulkBtn.dataset.bulk === 'delete'){
+        if(confirm(`Delete ${ids.length} selected candidate(s) from the review queue? This cannot be undone.`)){
+          ids.forEach(id => dismissed.add(id));
+          saveIdSet(DISMISSED_KEY, dismissed);
+          selectedCandidates.clear();
+          renderCandidates();
+        }
+      }
+      return;
+    }
+
     const btn = ev.target.closest('button[data-caction]');
     if(!btn) return;
     const id = btn.dataset.id;
@@ -333,6 +411,9 @@
       return true;
     }).sort((a,b) => (b.date||'').localeCompare(a.date||''));
 
+    const filteredIds = filtered.map(e => e.id);
+    selectedLedger = new Set([...selectedLedger].filter(id => filteredIds.includes(id)));
+
     document.getElementById('countLine').textContent =
       `${filtered.length} of ${entries.length} entries shown`;
 
@@ -346,12 +427,19 @@
       return;
     }
 
-    container.innerHTML = filtered.map(e => `
+    const toolbar = bulkToolbar('ledger', filteredIds, selectedLedger, `
+      <button class="btn danger" data-bulk="delete" type="button" ${selectedLedger.size ? '' : 'disabled'}>Delete selected</button>
+    `);
+
+    container.innerHTML = toolbar + filtered.map(e => `
       <div class="card" data-id="${e.id}">
         <div class="card-top">
-          <div>
-            <div class="card-id">GSP-${String(e.seq).padStart(4,'0')} &middot; <span class="type-tag">${escapeHtml(e.type)}</span></div>
-            <div class="card-title">${escapeHtml(e.title) || '(untitled entry)'}</div>
+          <div class="card-top-left">
+            <label class="select-check"><input type="checkbox" class="ledger-select" data-id="${e.id}" ${selectedLedger.has(e.id) ? 'checked' : ''}></label>
+            <div>
+              <div class="card-id">GSP-${String(e.seq).padStart(4,'0')} &middot; <span class="type-tag">${escapeHtml(e.type)}</span></div>
+              <div class="card-title">${escapeHtml(e.title) || '(untitled entry)'}</div>
+            </div>
           </div>
           <span class="stamp ${e.attr}">${attrLabel(e.attr)}</span>
         </div>
@@ -427,7 +515,45 @@
     document.getElementById('addBtn').textContent = 'Add to ledger';
   });
 
+  document.getElementById('ledger').addEventListener('change', (ev) => {
+    if(ev.target.classList.contains('ledger-select-all')){
+      const q = document.getElementById('search').value.trim().toLowerCase();
+      const ft = document.getElementById('filterType').value;
+      const fa = document.getElementById('filterAttr').value;
+      const filteredIds = entries.filter(e => {
+        if(ft && e.type !== ft) return false;
+        if(fa && e.attr !== fa) return false;
+        if(q){
+          const hay = [e.title, e.org, e.location, e.notes].join(' ').toLowerCase();
+          if(!hay.includes(q)) return false;
+        }
+        return true;
+      }).map(e => e.id);
+      if(ev.target.checked) filteredIds.forEach(id => selectedLedger.add(id));
+      else selectedLedger.clear();
+      renderLedger();
+    } else if(ev.target.classList.contains('ledger-select')){
+      const id = ev.target.dataset.id;
+      if(ev.target.checked) selectedLedger.add(id);
+      else selectedLedger.delete(id);
+      renderLedger();
+    }
+  });
+
   document.getElementById('ledger').addEventListener('click', (ev) => {
+    const bulkBtn = ev.target.closest('button[data-bulk]');
+    if(bulkBtn && bulkBtn.dataset.bulk === 'delete'){
+      const ids = [...selectedLedger];
+      if(ids.length === 0) return;
+      if(confirm(`Delete ${ids.length} selected ledger entr${ids.length === 1 ? 'y' : 'ies'}? This cannot be undone.`)){
+        entries = entries.filter(e => !selectedLedger.has(e.id));
+        selectedLedger.clear();
+        save(entries);
+        renderAll();
+      }
+      return;
+    }
+
     const btn = ev.target.closest('button[data-action]');
     if(!btn) return;
     const id = btn.dataset.id;

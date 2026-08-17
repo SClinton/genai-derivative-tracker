@@ -166,6 +166,22 @@ input:focus, select:focus, textarea:focus{
   position: relative;
 }
 .card-top{ display:flex; justify-content:space-between; align-items:flex-start; gap: 12px; flex-wrap: wrap;}
+.card-top-left{ display:flex; align-items:flex-start; gap: 10px; min-width: 0; }
+.select-check{ display:flex; align-items:center; padding-top: 3px; cursor: pointer; }
+.select-check input[type=checkbox]{ width: 16px; height: 16px; cursor: pointer; accent-color: var(--stamp-red); }
+
+.bulk-toolbar{
+  display:flex; align-items:center; gap: 16px; flex-wrap: wrap;
+  background: var(--card); border: 1px solid var(--card-edge); border-radius: 4px;
+  padding: 10px 14px; margin-bottom: 12px;
+  font-family:'IBM Plex Mono', monospace; font-size: 12px;
+}
+.bulk-toolbar label{ display:flex; align-items:center; gap: 6px; cursor: pointer; color: var(--ink-soft); }
+.bulk-toolbar label input[type=checkbox]{ width: 15px; height: 15px; cursor: pointer; accent-color: var(--stamp-red); }
+.bulk-toolbar .bulk-count{ color: var(--ink-soft); }
+.bulk-toolbar .bulk-actions{ display:flex; gap: 8px; margin-left: auto; flex-wrap: wrap; }
+.bulk-toolbar .bulk-actions .btn{ padding: 6px 12px; font-size: 11px; }
+.bulk-toolbar .bulk-actions .btn:disabled{ opacity: 0.4; cursor: not-allowed; }
 .card-id{
   font-family:'IBM Plex Mono', monospace; font-size: 11px; color: var(--ink-soft);
   letter-spacing: 0.06em;
