@@ -214,6 +214,54 @@ conference_search:
         - "IEEE Security and Privacy"
         - "ACM CCS"
 
+# ---------------------------------------------------------------------------
+# Video discovery (YouTube + Vimeo)
+# ---------------------------------------------------------------------------
+# A third, separate search pass -- deliberately scoped to just the flagship
+# LLM/Agentic Top 10 titles below (not all 18 queries in `queries:`), to
+# control SerpAPI usage. YouTube is a real SerpAPI engine; Vimeo has no
+# equivalent, so it's simulated via a site:vimeo.com Google search through
+# the same key (see SITE_SCOPED_SUB_ENGINES in crawler/engines.py).
+#
+# COST NOTE: 3 titles x 2 sub-engines = 6 searches/run (24/month weekly).
+# Combined with training_platform_search below and the existing 18-title
+# Pass 1 (72/month), total usage is ~108/month against SerpAPI's 100/month
+# free tier -- a small, accepted overage. Once the monthly cap is hit,
+# SerpAPI just rejects further requests for the rest of that month; the
+# crawler logs a warning and returns no results for those, it doesn't
+# crash, and resumes automatically next month.
+video_search:
+  enabled: true
+  results_per_query: 10
+  serpapi_engines:
+    - youtube
+    - vimeo
+  titles:
+    - "OWASP Top 10 for LLM Applications"
+    - "OWASP GenAI LLM Top 10"
+    - "OWASP Top 10 for Agentic Applications"
+
+# ---------------------------------------------------------------------------
+# Training platform course discovery
+# ---------------------------------------------------------------------------
+# Looks for courses on major training platforms built from or referencing
+# the LLM Top 10 / Agentic Top 10. One search per title covers all five
+# platforms via OR'd site: filters in a single query (see
+# SITE_SCOPED_SUB_ENGINES in crawler/engines.py) rather than one query per
+# platform -- 5x cheaper than querying each site separately.
+#
+# COST NOTE: 3 titles x 1 sub-engine = 3 searches/run (12/month weekly) --
+# included in the ~108/month total noted above.
+training_platform_search:
+  enabled: true
+  results_per_query: 10
+  serpapi_engines:
+    - training_platforms
+  titles:
+    - "OWASP Top 10 for LLM Applications"
+    - "OWASP GenAI LLM Top 10"
+    - "OWASP Top 10 for Agentic Applications"
+
 queries:
   # Sourced from genai.owasp.org/resources/, genai.owasp.org/llm-top-10/,
   # genai.owasp.org, and github.com/genai-security-project repos, reviewed

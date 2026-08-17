@@ -188,6 +188,38 @@ enabled, per run. Disable categories you don't need, trim the `names:`
 lists, or narrow `serpapi_engines`, before scaling up your resource title
 list.
 
+## Video and training-platform discovery
+
+Two more separate passes, controlled by `video_search:` and
+`training_platform_search:` in `queries.yaml`, both deliberately scoped to
+just the 3 flagship LLM/Agentic Top 10 titles (not all 18 queries in
+`queries:`) to control cost:
+
+- **Video** (`video_search`) — searches YouTube (a real SerpAPI engine) and
+  Vimeo (no dedicated SerpAPI engine exists, so this is simulated via a
+  `site:vimeo.com` Google search through the same `SERPAPI_KEY` — see
+  `SITE_SCOPED_SUB_ENGINES` in `crawler/engines.py`). No new credential
+  needed. The YouTube integration is implemented against SerpAPI's
+  documented behavior but hasn't been exercised against a live API key in
+  this environment — check the first real run's results before trusting it
+  fully.
+- **Training platforms** (`training_platform_search`) — looks for courses
+  on Pluralsight, Coursera, Microsoft Learn, CompTIA, and Udemy referencing
+  the LLM/Agentic Top 10. One query per title covers all five platforms via
+  OR'd `site:` filters in a single search, not five separate ones.
+
+Both reuse `SERPAPI_KEY` — no new secrets required. Add or remove titles
+under each section's `titles:` list to change scope.
+
+**Cost note:** combined, these two passes add ~9 searches/run (~36/month
+on the weekly schedule) on top of the ~72/month from the main resource-title
+pass — bringing total usage to ~108/month, a small accepted overage against
+SerpAPI's 100/month free tier. Once the monthly cap is hit, SerpAPI just
+rejects further requests for the rest of that month (the crawler logs a
+warning and returns no results for those, it doesn't crash) and resumes
+automatically next month. Narrow `serpapi_engines` or the `titles:` lists
+further, or upgrade the plan, if you'd rather stay strictly under the cap.
+
 ## Limitations, honestly
 
 - Search APIs (and Perplexity) index/access what's publicly reachable —

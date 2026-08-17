@@ -14,15 +14,31 @@ import time
 import requests
 
 
+# Vimeo and the training platforms have no dedicated SerpAPI engine (unlike
+# YouTube, which is a real SerpAPI engine below) -- simulated instead via a
+# site:-scoped Google search through the same SERPAPI_KEY, so no new
+# credential is needed. Training platforms are OR'd into ONE query per
+# title rather than one query per platform, since that's a single search
+# either way -- 5x cheaper than querying each site separately.
+SITE_SCOPED_SUB_ENGINES = {
+    "vimeo": "site:vimeo.com",
+    "training_platforms": (
+        "(site:pluralsight.com OR site:coursera.org OR site:learn.microsoft.com "
+        "OR site:comptia.org OR site:udemy.com)"
+    ),
+}
+
+
 # ---------------------------------------------------------------------------
-# SerpAPI (covers Google, Bing, DuckDuckGo, Yahoo, Yandex, etc. via `engine`
-# param). Google's own Custom Search API was dropped as an engine here: as
-# of 2025 its free/standard tier only searches domains you explicitly
-# configure, not the open web, so it can't do the broad, unrestricted search
-# this crawler needs -- SerpAPI's `google` sub-engine (see serpapi_engines
-# in queries.yaml) gives real unrestricted google.com results instead.
-# Bing's own Web Search API was also retired by Microsoft in Aug 2025, so
-# this is the practical route to Bing-flavored (and DuckDuckGo) results too.
+# SerpAPI (covers Google, Bing, DuckDuckGo, YouTube, and the site-scoped
+# pseudo-engines above via `engine` param). Google's own Custom Search API
+# was dropped as an engine here: as of 2025 its free/standard tier only
+# searches domains you explicitly configure, not the open web, so it can't
+# do the broad, unrestricted search this crawler needs -- SerpAPI's
+# `google` sub-engine (see serpapi_engines in queries.yaml) gives real
+# unrestricted google.com results instead. Bing's own Web Search API was
+# also retired by Microsoft in Aug 2025, so this is the practical route to
+# Bing-flavored (and DuckDuckGo) results too.
 # ---------------------------------------------------------------------------
 def search_serpapi(query, cfg):
     api_key = os.environ.get("SERPAPI_KEY")
@@ -36,8 +52,23 @@ def search_serpapi(query, cfg):
     results = []
 
     for sub_engine in sub_engines:
-        params = {"engine": sub_engine, "q": query, "api_key": api_key, "num": num}
-        if cfg.get("lang"):
+        site_filter = SITE_SCOPED_SUB_ENGINES.get(sub_engine)
+        actual_engine = "google" if site_filter else sub_engine
+        search_query = f"{query} {site_filter}" if site_filter else query
+
+        params = {"engine": actual_engine, "api_key": api_key, "num": num}
+        # YouTube's SerpAPI engine takes the query as `search_query`, not
+        # `q` -- everything else (google/bing/duckduckgo, and the
+        # site-scoped pseudo-engines above, which are really `google`
+        # underneath) uses `q`. Based on SerpAPI's documented YouTube
+        # engine behavior -- not verified against a live call (no API key
+        # available in this environment) -- confirm the first real run's
+        # output looks right before relying on it.
+        if actual_engine == "youtube":
+            params["search_query"] = search_query
+        else:
+            params["q"] = search_query
+        if cfg.get("lang") and cfg["lang"] != "en":
             params["hl"] = cfg["lang"]
         if cfg.get("country"):
             params["gl"] = cfg["country"].lower()
@@ -46,14 +77,26 @@ def search_serpapi(query, cfg):
             print(f"  ! serpapi/{sub_engine} failed ({resp.status_code}) for: {query}", file=sys.stderr)
             continue
         data = resp.json()
-        items = data.get("organic_results", [])
-        for item in items:
-            results.append({
-                "title": item.get("title", ""),
-                "link": item.get("link", ""),
-                "snippet": item.get("snippet", ""),
-                "engine": sub_engine,
-            })
+
+        if actual_engine == "youtube":
+            items = data.get("video_results", [])
+            for item in items:
+                channel = item.get("channel") or {}
+                results.append({
+                    "title": item.get("title", ""),
+                    "link": item.get("link", ""),
+                    "snippet": item.get("description") or channel.get("name", ""),
+                    "engine": sub_engine,
+                })
+        else:
+            items = data.get("organic_results", [])
+            for item in items:
+                results.append({
+                    "title": item.get("title", ""),
+                    "link": item.get("link", ""),
+                    "snippet": item.get("snippet", ""),
+                    "engine": sub_engine,
+                })
         time.sleep(0.4)
     return results
 

@@ -183,6 +183,33 @@ def run_search(query, engine_name, job_cfg, existing_by_id, excluded_domains,
     return new_count, dup_count, excl_count
 
 
+def run_titles_pass(pass_name, pass_cfg, config, existing_by_id, excluded_domains, totals):
+    """Shared shape for video_search/training_platform_search: a curated,
+    usually-shorter title list against a specific serpapi_engines override
+    (e.g. youtube/vimeo, or the training-platform site-scoped search),
+    with no cross-product against languages or conference names -- unlike
+    Pass 1/2, these exist to add a few extra site-scoped sources cheaply
+    for the highest-value titles, not to repeat the full resource-title
+    sweep for every engine."""
+    if not pass_cfg.get("enabled"):
+        return
+    titles = pass_cfg.get("titles", [])
+    job_cfg = {
+        **config,
+        "results_per_query": pass_cfg.get("results_per_query", 10),
+        "serpapi_engines": pass_cfg.get("serpapi_engines", []),
+    }
+    for title in titles:
+        query = f'"{title}"'
+        print(f"[serpapi] [{pass_name}] Searching: {query}")
+        n, d, x = run_search(
+            query, "serpapi", job_cfg, existing_by_id, excluded_domains,
+            extra_fields={"matchType": pass_name},
+        )
+        totals["new"] += n; totals["dup"] += d; totals["excl"] += x
+        time.sleep(0.4)
+
+
 def main():
     config = load_config()
     resource_titles = config.get("queries", [])
@@ -269,6 +296,19 @@ def main():
                         )
                         totals["new"] += n; totals["dup"] += d; totals["excl"] += x
                         time.sleep(0.4)
+
+    # -----------------------------------------------------------------
+    # Pass 3: video search (YouTube + Vimeo) -- curated flagship titles only
+    # -----------------------------------------------------------------
+    run_titles_pass("video", config.get("video_search", {}), config, existing_by_id, excluded_domains, totals)
+
+    # -----------------------------------------------------------------
+    # Pass 4: training platform course discovery -- same curated titles
+    # -----------------------------------------------------------------
+    run_titles_pass(
+        "training_platform", config.get("training_platform_search", {}),
+        config, existing_by_id, excluded_domains, totals,
+    )
 
     all_candidates = list(existing_by_id.values())
     all_candidates.sort(key=lambda c: c.get("foundAt", ""), reverse=True)
