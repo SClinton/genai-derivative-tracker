@@ -21,10 +21,18 @@
 #                                 results now come from SerpAPI's `google`
 #                                 sub-engine instead, reusing the same key.)
 #   perplexity  -> PERPLEXITY_API_KEY   (AI answer engine, cites sources)
+#   parallel    -> PARALLEL_API_KEY   (AI-native semantic search -- catches
+#                                 paraphrased mentions a keyword search might
+#                                 miss, and is the only engine here that
+#                                 returns a publish date per result. No
+#                                 confirmed free tier -- billed from the
+#                                 first request, ~$5/1,000 basic-mode
+#                                 requests. See crawler/SETUP.md.)
 # Comment out any engine you haven't set up yet.
 engines:
   - serpapi
   - perplexity
+  - parallel
 
 # Which SerpAPI sub-engines to query (only used if serpapi is enabled above).
 # `google` gives real unrestricted google.com results (replaces the old
@@ -37,6 +45,11 @@ serpapi_engines:
 
 # Perplexity model to use (only used if perplexity is enabled above).
 perplexity_model: sonar
+
+# Parallel.ai search mode (only used if parallel is enabled above) --
+# "basic" and "advanced" are both $0.005/request; "turbo" is $0.001/request
+# but trades some accuracy. See crawler/SETUP.md.
+parallel_mode: basic
 
 results_per_query: 10
 

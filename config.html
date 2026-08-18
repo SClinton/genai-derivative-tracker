@@ -80,12 +80,30 @@ conference_search:
   </div>
 
   <div class="upgrade-card">
+    <h3>Parallel.ai Search API <span class="badge new-cred">Requires a new credential</span></h3>
+    <p>
+      AI-native semantic search &mdash; catches paraphrased mentions a literal keyword search
+      might miss, and is currently the only engine here that returns a per-result publish date
+      (every other engine leaves the candidate's date empty, falling back to today's date at
+      Quick-add time). <b>No confirmed free tier</b> &mdash; billed from the first request,
+      roughly $0.36/month at this project's current scope (18 titles &times; 1 language, basic
+      mode, $5/1,000 requests).
+    </p>
+    <h4>To enable</h4>
+    <ol>
+      <li>Get a key at <a href="https://platform.parallel.ai" target="_blank" rel="noopener">platform.parallel.ai</a>.</li>
+      <li>Add it as a GitHub Actions secret yourself (I won't ask for or handle the value):</li>
+    </ol>
+    <div class="code-block">gh secret set PARALLEL_API_KEY --repo SClinton/genai-derivative-tracker</div>
+    <p><code>parallel</code> is already enabled in <code>crawler/queries.yaml</code>'s <code>engines:</code> list &mdash; it'll just start working once the secret is set, no other config change needed.</p>
+  </div>
+
+  <div class="upgrade-card">
     <h3>Google Cloud Translation API <span class="badge new-cred">Requires a new credential</span></h3>
     <p>
       Only needed if you want <code>translate_modifiers: true</code> &mdash; translating generic
       terms like "presentation"/"training course" into each enabled language to catch paraphrased
-      mentions, not just exact-title hits. This is the one upgrade path here that genuinely needs
-      a credential that isn't already configured.
+      mentions, not just exact-title hits.
     </p>
     <h4>To enable</h4>
     <ol>
@@ -131,7 +149,14 @@ conference_search:
       // structure is authored by this same project, so a few regexes over
       // known blocks is simpler and more transparent than a YAML dependency.
       // Falls back to a plain message below if any pattern isn't found.
-      const engMatch = text.match(/serpapi_engines:\s*\n((?:\s*-\s*\S+\s*\n)+)/);
+      // Anchored to column 0 (^ + m flag) since conference_search/
+      // video_search/training_platform_search each have their own INDENTED
+      // engines:/serpapi_engines: keys -- an unanchored match could grab
+      // one of those instead of the real top-level list.
+      const topEnginesMatch = text.match(/^engines:\s*\n((?:\s*-\s*\S+\s*\n)+)/m);
+      const topEngines = topEnginesMatch ? [...topEnginesMatch[1].matchAll(/-\s*(\S+)/g)].map(m => m[1]) : null;
+
+      const engMatch = text.match(/^serpapi_engines:\s*\n((?:\s*-\s*\S+\s*\n)+)/m);
       const engines = engMatch ? [...engMatch[1].matchAll(/-\s*(\S+)/g)].map(m => m[1]) : null;
 
       const confMatch = text.match(/conference_search:\s*\n\s*enabled:\s*(true|false)/);
@@ -149,7 +174,7 @@ conference_search:
         ? (queriesBlockMatch[1].match(/^\s*-\s*"/gm) || []).length
         : null;
 
-      if(!engines && confEnabled === null && !regions && queryCount === null){
+      if(!topEngines && !engines && confEnabled === null && !regions && queryCount === null){
         throw new Error('no recognizable config blocks found');
       }
 
@@ -159,6 +184,7 @@ conference_search:
       statusLine.textContent = 'Live-read from crawler/queries.yaml on this page load.';
       statusGrid.innerHTML = [
         queryCount !== null ? item('Resource queries', queryCount, true) : '',
+        topEngines ? item('Search engines', topEngines.join(', '), topEngines.length > 1) : '',
         engines ? item('SerpAPI sub-engines', engines.join(', '), engines.length > 1) : '',
         regions ? item('Active language regions', `${activeRegions} of ${totalRegions}`, activeRegions > 1) : '',
         confEnabled !== null ? item('Conference search pass', confEnabled ? 'Enabled' : 'Disabled', confEnabled) : '',

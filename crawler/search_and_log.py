@@ -9,8 +9,9 @@ human review in the ledger app.
 This does NOT auto-confirm anything. It only surfaces leads.
 
 Requires (whichever engines are enabled in crawler/queries.yaml):
-  SERPAPI_KEY          - SerpAPI key (Google + Bing + DuckDuckGo)
+  SERPAPI_KEY          - SerpAPI key (Google + Bing + DuckDuckGo + YouTube)
   PERPLEXITY_API_KEY   - Perplexity API key
+  PARALLEL_API_KEY     - Parallel.ai Search API key
   GOOGLE_TRANSLATE_API_KEY - optional, for translate_modifiers
 
 Config:
@@ -110,6 +111,19 @@ def make_candidate_id(url):
     return "c-" + re.sub(r"[^a-z0-9]+", "-", url.lower())[:80].strip("-")
 
 
+def normalize_date(raw):
+    """Accepts a plain "YYYY-MM-DD" or a longer ISO datetime string and
+    keeps just the date part; returns None for anything else rather than
+    risk storing a malformed value -- the ledger's date fallback (see
+    index.html's Quick add) already treats a missing date as "use today",
+    so an unparseable date degrading to None is a safe, not silent,
+    failure mode."""
+    if not raw:
+        return None
+    m = re.match(r"^(\d{4}-\d{2}-\d{2})", str(raw))
+    return m.group(1) if m else None
+
+
 def build_localized_query(title, lang_entry, cfg):
     """Resource titles are searched as-is (quoted) in every language, since
     proper nouns are usually kept in English even in foreign-language
@@ -169,7 +183,7 @@ def run_search(query, engine_name, job_cfg, existing_by_id, excluded_domains,
             "link": url,
             "snippet": snippet,
             "matchedQuery": query,
-            "date": None,
+            "date": normalize_date(item.get("date")),
             "attr": "unclear",
             "notes": "Auto-discovered. Needs human review before counting as a confirmed derivative work.",
             "foundAt": datetime.now(timezone.utc).isoformat(),

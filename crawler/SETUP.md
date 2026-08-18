@@ -45,7 +45,33 @@ surfacing your content, not just where a page links to it.
 This is billed per request — check current pricing before turning it on for
 a long query list.
 
-### Other AI engines (not wired up yet)
+### Parallel.ai Search API
+
+AI-native semantic search (you describe an objective + keywords, not just a
+literal keyword match) — catches paraphrased mentions a literal keyword
+search might miss. It's also currently the **only** engine here whose
+response includes a per-result publish date, which `search_and_log.py`'s
+`normalize_date()` reads into the candidate's `date` field (every other
+engine leaves it `null`, and the site's Quick add falls back to today's
+date when it's missing).
+
+1. Get an API key at https://platform.parallel.ai.
+2. Set it as `PARALLEL_API_KEY`.
+3. `parallel_mode` in `queries.yaml` defaults to `basic` (`basic`/`advanced`
+   are both $0.005/request; `turbo` is $0.001/request but trades some
+   accuracy).
+
+**No confirmed free tier** — unlike SerpAPI's 100/month, Parallel is billed
+from the first request as far as their pricing docs state (their marketing
+page separately claims "up to 80,000 free search requests," which the
+pricing docs don't corroborate — check your own dashboard at
+platform.parallel.ai rather than trusting either page blindly). At this
+project's current scope (18 titles, English only, one request each) that's
+18 requests/run, ~72/month, **~$0.36/month** in basic mode — small, but
+real money from the start, unlike the other engines here which have an
+actual free allowance.
+
+### Other AI engines considered and not wired up
 
 - **ChatGPT / OpenAI**: no public "web search with citations" endpoint
   suitable for this use case as of this writing.
@@ -54,7 +80,17 @@ a long query list.
   same pattern as `search_perplexity()` if you want it — check Google's
   current Gemini API docs for the grounding tool's exact request shape first,
   since these change.
-- **Microsoft Copilot**: no public API for this.
+- **Microsoft Copilot**: Microsoft 365 Copilot's actual public APIs (Chat
+  API, Search API) only search *your own tenant's* OneDrive/SharePoint
+  content — not the open web, so they're not usable here at all. The real
+  open-web equivalent is Azure AI Foundry's "Grounding with Bing Search,"
+  but it costs $14/1,000 queries with **no free tier**, and requires
+  provisioning real Azure infrastructure (a subscription, an AI Foundry
+  project, a deployed model, a Bing grounding connection, and OAuth2
+  service-principal auth) rather than just an API key — evaluated and
+  decided against in favor of Parallel.ai above, which is cheaper, simpler
+  to integrate (a single API-key REST call), and adds real capability
+  (publish dates) rather than just another SERP-flavored source.
 
 ## Add the keys as GitHub Actions secrets
 
@@ -63,6 +99,7 @@ secret**. Add whichever of these you're using:
 
 - `SERPAPI_KEY`
 - `PERPLEXITY_API_KEY`
+- `PARALLEL_API_KEY`
 
 ## Edit your queries
 
@@ -111,6 +148,7 @@ cd crawler
 pip install -r requirements.txt
 export SERPAPI_KEY=your_key      # whichever engines you're using
 export PERPLEXITY_API_KEY=your_key
+export PARALLEL_API_KEY=your_key
 python search_and_log.py
 python attribute.py
 ```

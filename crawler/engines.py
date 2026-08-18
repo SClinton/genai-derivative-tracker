@@ -153,7 +153,57 @@ def search_perplexity(query, cfg):
     return results
 
 
+# ---------------------------------------------------------------------------
+# Parallel.ai Search API -- AI-native semantic search (an "objective" plus
+# keywords, not a raw keyword SERP), used alongside SerpAPI/Perplexity to
+# catch paraphrased mentions a literal keyword search might miss. Also the
+# only engine here whose response includes a per-result publish date --
+# search_and_log.py's normalize_date() reads it into the candidate's date
+# field, which every other engine leaves None (falling back to "today" at
+# Quick-add time -- see index.html).
+#
+# No confirmed free tier as of this writing (unlike SerpAPI's 100/month) --
+# billed per request from the first call. See crawler/SETUP.md for the
+# actual cost at this project's current query volume.
+# ---------------------------------------------------------------------------
+def search_parallel(query, cfg):
+    api_key = os.environ.get("PARALLEL_API_KEY")
+    if not api_key:
+        print("  ! skipping parallel: missing PARALLEL_API_KEY", file=sys.stderr)
+        return []
+
+    endpoint = "https://api.parallel.ai/v1/search"
+    payload = {
+        "objective": f"Find web pages that reuse, cite, or appear derived from: {query}",
+        "search_queries": [query],
+        "mode": cfg.get("parallel_mode", "basic"),
+    }
+    resp = requests.post(
+        endpoint,
+        headers={"x-api-key": api_key, "Content-Type": "application/json"},
+        json=payload,
+        timeout=30,
+    )
+    if resp.status_code != 200:
+        print(f"  ! parallel failed ({resp.status_code}) for: {query}", file=sys.stderr)
+        return []
+
+    data = resp.json()
+    results = []
+    for item in data.get("results", []):
+        excerpts = item.get("excerpts") or []
+        results.append({
+            "title": item.get("title", ""),
+            "link": item.get("url", ""),
+            "snippet": excerpts[0] if excerpts else "",
+            "date": item.get("publish_date"),
+            "engine": "parallel",
+        })
+    return results
+
+
 ENGINES = {
     "serpapi": search_serpapi,
     "perplexity": search_perplexity,
+    "parallel": search_parallel,
 }
