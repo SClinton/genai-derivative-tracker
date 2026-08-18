@@ -38,6 +38,7 @@ from translate import translate_text
 ROOT = Path(__file__).resolve().parent.parent
 CONFIG_PATH = ROOT / "crawler" / "queries.yaml"
 DATA_PATH = ROOT / "data" / "candidates.json"
+REVIEWED_PATH = ROOT / "data" / "reviewed.json"
 
 
 def load_config():
@@ -50,6 +51,25 @@ def load_existing_candidates():
         with open(DATA_PATH, "r") as f:
             return json.load(f)
     return []
+
+
+def load_reviewed_ids():
+    """IDs the site visitor has already decided on -- promoted to their
+    ledger, or dismissed -- synced manually via the site's "Sync reviewed
+    status" export (Config page) and a commit to data/reviewed.json. The
+    ledger and dismissed/promoted state live only in browser localStorage;
+    the crawler has no way to see them directly without this file. Returns
+    an empty set if nothing's been synced yet (file doesn't exist) or the
+    file can't be parsed, rather than failing the whole run over it."""
+    if not REVIEWED_PATH.exists():
+        return set()
+    try:
+        with open(REVIEWED_PATH) as f:
+            data = json.load(f)
+        return set(data.get("promoted", [])) | set(data.get("dismissed", []))
+    except (json.JSONDecodeError, AttributeError) as e:
+        print(f"  ! could not read data/reviewed.json ({e}) -- treating as empty.", file=sys.stderr)
+        return set()
 
 
 def save_candidates(candidates):
@@ -143,7 +163,12 @@ def build_localized_query(title, lang_entry, cfg):
 def run_search(query, engine_name, job_cfg, existing_by_id, excluded_domains,
                 default_type=None, extra_fields=None):
     """Runs one query against one engine, filters/dedups hits, and adds new
-    candidates to existing_by_id in place. Returns (new_count, dup_count, excluded_count)."""
+    candidates to existing_by_id in place. Returns (new_count, dup_count, excluded_count).
+    dup_count covers both "already in candidates.json" and "already
+    reviewed" (promoted/dismissed, per data/reviewed.json, read via
+    job_cfg["reviewed_ids"] -- same as date_range, injected once into the
+    shared config dict in main() so it reaches every pass automatically)
+    -- both mean the same thing here: don't re-surface it."""
     engine_fn = ENGINES.get(engine_name)
     if not engine_fn:
         return 0, 0, 0
@@ -154,6 +179,7 @@ def run_search(query, engine_name, job_cfg, existing_by_id, excluded_domains,
         print(f"  ! {engine_name} raised an error: {e}", file=sys.stderr)
         return 0, 0, 0
 
+    reviewed_ids = job_cfg.get("reviewed_ids") or set()
     new_count = dup_count = excl_count = 0
     for item in items:
         url = item.get("link", "")
@@ -164,7 +190,7 @@ def run_search(query, engine_name, job_cfg, existing_by_id, excluded_domains,
             continue
 
         cid = make_candidate_id(url)
-        if cid in existing_by_id:
+        if cid in existing_by_id or cid in reviewed_ids:
             dup_count += 1
             continue
 
@@ -256,6 +282,10 @@ def main():
         print(f"Historical scan: date_range={config['date_range']} "
               f"(hard filter on Google-family search, bucket approximation on YouTube, "
               f"best-effort prompt hint on Perplexity/Parallel -- see engines.py)")
+    config["reviewed_ids"] = load_reviewed_ids()
+    if config["reviewed_ids"]:
+        print(f"Loaded {len(config['reviewed_ids'])} already-reviewed candidate ID(s) "
+              f"from data/reviewed.json -- won't re-surface these.")
     resource_titles = config.get("queries", [])
     excluded_domains = [d.lower() for d in config.get("excluded_domains", [])]
     enabled_engines = config.get("engines", ["serpapi"])
@@ -354,12 +384,22 @@ def main():
         config, existing_by_id, excluded_domains, totals,
     )
 
-    all_candidates = list(existing_by_id.values())
+    # Prunes candidates that were already sitting in candidates.json from a
+    # previous run but have since been synced as reviewed (promoted or
+    # dismissed) -- the skip in run_search() above only stops *new* hits
+    # from being re-added, it doesn't touch what's already on file.
+    reviewed_ids = config["reviewed_ids"]
+    before_prune = len(existing_by_id)
+    all_candidates = [c for c in existing_by_id.values() if c["id"] not in reviewed_ids]
+    pruned_count = before_prune - len(all_candidates)
+
     all_candidates.sort(key=lambda c: c.get("foundAt", ""), reverse=True)
     save_candidates(all_candidates)
 
     print(f"\nDone. {totals['new']} new candidates, {totals['dup']} duplicates skipped, "
           f"{totals['excl']} excluded-domain hits skipped.")
+    if pruned_count:
+        print(f"Pruned {pruned_count} already-reviewed candidate(s) from candidates.json.")
     print(f"Total candidates on file: {len(all_candidates)}")
 
 

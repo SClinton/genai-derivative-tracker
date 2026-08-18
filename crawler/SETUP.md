@@ -153,6 +153,38 @@ Via `gh` CLI: `gh workflow run "Crawl for derivative works" --repo
 SClinton/genai-derivative-tracker -f date_from=2022-01-01 -f
 date_to=2023-12-31`.
 
+## Keeping reviewed candidates from resurfacing
+
+Promoting or dismissing a candidate on the Ledger page only updates that
+browser's `localStorage` -- the crawler runs on GitHub's servers and has no
+way to see it. Left alone, `data/candidates.json` just keeps growing with
+entries you've already handled, and a future crawl has no way to know not
+to re-add something you already dismissed.
+
+**Site → repo, manually:** on the Config page, "Sync reviewed status"
+downloads a `reviewed.json` listing every candidate ID you've promoted or
+dismissed in that browser. Move it to `data/reviewed.json` and push:
+
+```bash
+mv ~/Downloads/reviewed.json data/reviewed.json
+git add data/reviewed.json
+git commit -m "Sync reviewed candidate status"
+git push
+```
+
+**What the crawler does with it:** `crawler/search_and_log.py` reads
+`data/reviewed.json` (via `load_reviewed_ids()`) at the start of every run,
+if present. Any new hit whose candidate ID is already promoted or
+dismissed is skipped rather than re-added, and any matching entry already
+sitting in `data/candidates.json` from before you synced is pruned out.
+Both promoted and dismissed IDs are treated the same way here -- both mean
+"already decided, don't ask again."
+
+Re-sync after any review session where you want future crawls to stop
+re-suggesting things you've handled. Each download replaces the file with
+your browser's current full list, so there's nothing to merge by hand --
+just overwrite `data/reviewed.json` and push again.
+
 ## Attribution
 
 After the crawl, `crawler/attribute.py` runs automatically as a second

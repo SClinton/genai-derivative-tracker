@@ -88,6 +88,33 @@
     <p class="subtitle">Double-check any custom expression at <a href="https://crontab.guru" target="_blank" rel="noopener">crontab.guru</a> before pushing &mdash; a typo here just means the crawl silently doesn't run on the day you expected, GitHub won't warn you.</p>
   </div>
 
+  <div class="upgrade-card">
+    <h3>Sync reviewed status</h3>
+    <p>
+      Promoting or dismissing a candidate on the <a href="index.html">Ledger</a> page only updates
+      this browser's local storage &mdash; the crawler runs on GitHub's servers and has no way to
+      see that. Left alone, already-reviewed candidates just keep sitting in
+      <code>data/candidates.json</code> forever, and a future crawl has no way to know not to
+      re-surface something you already dismissed.
+    </p>
+    <p>
+      This button downloads a small JSON file listing every candidate ID you've promoted or
+      dismissed <b>in this browser</b>. Move it into the repo as <code>data/reviewed.json</code>
+      and push &mdash; the next crawl run will skip re-adding anything on that list, and prune
+      matching entries already sitting in <code>candidates.json</code>.
+    </p>
+    <p id="reviewedCount" class="count-line">Reading local review status&hellip;</p>
+    <p>
+      <button class="btn" id="syncReviewedBtn" type="button">Download reviewed.json</button>
+    </p>
+    <div class="code-block"><span class="comment"># After downloading, from the repo root:</span>
+mv ~/Downloads/reviewed.json data/reviewed.json
+git add data/reviewed.json
+git commit -m "Sync reviewed candidate status"
+git push</div>
+    <p class="subtitle">Re-run this after any review session where you want future crawls to stop re-suggesting things you've already handled. Each download replaces the file with your browser's <i>current</i> full list &mdash; no need to merge anything by hand.</p>
+  </div>
+
   <h2 class="section">Upgrade paths</h2>
 
   <div class="upgrade-card">
@@ -291,6 +318,38 @@ conference_search:
     .catch(() => {
       scheduleLine.innerHTML = 'Could not read the live schedule &mdash; check <a href="https://github.com/SClinton/genai-derivative-tracker/blob/main/.github/workflows/crawl.yml" target="_blank" rel="noopener">.github/workflows/crawl.yml</a> directly.';
     });
+
+  // ---- Sync reviewed status: same localStorage keys index.html uses ----
+  const DISMISSED_KEY = 'gsp-dismissed-candidates-v1';
+  const PROMOTED_KEY = 'gsp-promoted-candidates-v1';
+  function loadIdList(key){
+    try { return JSON.parse(localStorage.getItem(key) || '[]'); }
+    catch(e){ return []; }
+  }
+
+  const reviewedCount = document.getElementById('reviewedCount');
+  const promotedIds = loadIdList(PROMOTED_KEY);
+  const dismissedIds = loadIdList(DISMISSED_KEY);
+  reviewedCount.textContent = (promotedIds.length + dismissedIds.length) === 0
+    ? 'Nothing promoted or dismissed in this browser yet -- nothing to sync.'
+    : `${promotedIds.length} promoted, ${dismissedIds.length} dismissed in this browser.`;
+
+  document.getElementById('syncReviewedBtn').addEventListener('click', () => {
+    // Re-read at click time rather than reusing the values captured above --
+    // review status could have changed on the Ledger page in another tab
+    // since this page loaded.
+    const data = {
+      promoted: loadIdList(PROMOTED_KEY),
+      dismissed: loadIdList(DISMISSED_KEY),
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'reviewed.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  });
 })();
 </script>
 </body>
