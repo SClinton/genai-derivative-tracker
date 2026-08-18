@@ -115,6 +115,7 @@
   <footer class="util">
     <span>Data stored locally in this browser.</span>
     <div>
+      <button class="btn secondary" id="exportCsvBtn" type="button">Export CSV</button>
       <button class="btn secondary" id="exportBtn" type="button">Export JSON</button>
       <button class="btn secondary" id="importBtn" type="button">Import JSON</button>
       <input type="file" id="importFile" accept="application/json" style="display:none">
@@ -594,6 +595,42 @@
     const a = document.createElement('a');
     a.href = url;
     a.download = 'gsp-derivative-ledger-' + new Date().toISOString().slice(0,10) + '.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  function csvField(value){
+    const s = (value === null || value === undefined) ? '' : String(value);
+    // RFC 4180: quote (and escape embedded quotes) any field containing a
+    // comma, quote, or newline -- notes/snippets routinely have all three.
+    return /[",\r\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+  }
+
+  function entriesToCsv(list){
+    const headers = ['Case ID', 'Title', 'Type', 'Company / individual', 'Location', 'Link', 'Date observed', 'Attribution', 'Notes'];
+    const rows = list.map(e => [
+      'GSP-' + String(e.seq).padStart(4, '0'),
+      e.title || '',
+      e.type || '',
+      e.org || '',
+      e.location || '',
+      e.link || '',
+      e.date || '',
+      attrLabel(e.attr),
+      e.notes || '',
+    ].map(csvField).join(','));
+    return [headers.map(csvField).join(','), ...rows].join('\r\n');
+  }
+
+  document.getElementById('exportCsvBtn').addEventListener('click', () => {
+    // Leading BOM so Excel (Windows especially) reliably detects UTF-8 --
+    // notes/snippets can contain non-ASCII text from multilingual results.
+    const csv = '﻿' + entriesToCsv(entries);
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'gsp-derivative-ledger-' + new Date().toISOString().slice(0,10) + '.csv';
     a.click();
     URL.revokeObjectURL(url);
   });

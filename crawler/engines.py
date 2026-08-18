@@ -65,6 +65,53 @@ def _date_range_hint(date_range):
     return ""
 
 
+# YouTube's own search has no arbitrary custom date range like Google's
+# tbs=cdr -- only these fixed relative "upload date" buckets, passed via
+# SerpAPI's `sp` param. Only "today" (EgIIAg==) and "this week" (EgIIAw==)
+# are corroborated by an independent source beyond SerpAPI's own docs
+# (which document only the sort-by-date value, CAI=, not these filter
+# presets at all); "this month" and "this year" are extrapolated from the
+# same incrementing pattern (...Ag==, ...Aw==, ...BA==, ...BQ==) and not
+# independently verified -- confirm the first real historical-scan run's
+# result count looks sane before trusting it.
+_YOUTUBE_UPLOAD_DATE_SP = {
+    "week": "EgIIAw==",
+    "month": "EgIIBA==",
+    "year": "EgIIBQ==",
+}
+
+
+def _youtube_date_sp(date_range):
+    """Approximates a historical date_range as the narrowest YouTube
+    upload-date bucket that fully covers it, using only the `from` bound
+    (the buckets are all "since N ago", there's no upper-bound concept to
+    match `to` against). Deliberately returns None -- no filter, not a
+    wrong one -- when the requested range starts further back than
+    YouTube's broadest bucket (~1 year): restricting to "this year" would
+    silently exclude genuinely older content the historical scan is
+    explicitly looking for, which is worse than not filtering at all.
+    "Last hour"/"Today" are omitted entirely -- irrelevant for a
+    backward-looking historical scan, which is the only thing this
+    approximation is for."""
+    if not date_range:
+        return None
+    frm = date_range.get("from")
+    if not frm:
+        return None
+    try:
+        from_dt = datetime.strptime(frm, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+    except ValueError:
+        return None
+    days_back = (datetime.now(timezone.utc) - from_dt).days
+    if days_back <= 7:
+        return _YOUTUBE_UPLOAD_DATE_SP["week"]
+    if days_back <= 31:
+        return _YOUTUBE_UPLOAD_DATE_SP["month"]
+    if days_back <= 365:
+        return _YOUTUBE_UPLOAD_DATE_SP["year"]
+    return None
+
+
 # Vimeo and the training platforms have no dedicated SerpAPI engine (unlike
 # YouTube, which is a real SerpAPI engine below) -- simulated instead via a
 # site:-scoped Google search through the same SERPAPI_KEY, so no new
@@ -123,14 +170,19 @@ def search_serpapi(query, cfg):
             params["hl"] = cfg["lang"]
         if cfg.get("country"):
             params["gl"] = cfg["country"].lower()
-        # Real query-level date filter -- only meaningful for actual Google
-        # search (also covers the vimeo/training_platforms pseudo-engines,
-        # which route through google underneath). YouTube has its own,
-        # different date-filter mechanism, not wired up here.
+        # Real query-level date filter -- for actual Google search (also
+        # covers the vimeo/training_platforms pseudo-engines, which route
+        # through google underneath) this is a precise custom range.
+        # YouTube gets a coarser bucket approximation instead -- see
+        # _youtube_date_sp() for why (no arbitrary range support there).
         if actual_engine == "google":
             tbs = _google_date_range_tbs(cfg.get("date_range"))
             if tbs:
                 params["tbs"] = tbs
+        elif actual_engine == "youtube":
+            sp = _youtube_date_sp(cfg.get("date_range"))
+            if sp:
+                params["sp"] = sp
         resp = requests.get(endpoint, params=params, timeout=20)
         if resp.status_code != 200:
             print(f"  ! serpapi/{sub_engine} failed ({resp.status_code}) for: {query}", file=sys.stderr)

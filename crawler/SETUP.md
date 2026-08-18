@@ -133,12 +133,21 @@ real date filter:
   `tbs=cdr:1,cd_min:...,cd_max:...` custom date range param. If only one
   side of the range is given, the other defaults to a wide-open bound
   (2020-01-01, or today) rather than leaving the filter half-built.
+- **YouTube** has no arbitrary custom date range -- only fixed relative
+  "uploaded in the last week/month/year" buckets (via SerpAPI's `sp`
+  param). Approximated using just the `date_from` bound: picks the
+  narrowest bucket that fully covers it (e.g. `date_from` 20 days ago →
+  "this month"). If `date_from` is older than ~1 year, **no filter is
+  applied** rather than wrongly restricting to "this year" and silently
+  excluding genuinely older content -- see `_youtube_date_sp()` in
+  `crawler/engines.py`. Only 2 of the 5 bucket values used there are
+  independently corroborated beyond SerpAPI's own (thin) docs; the rest
+  are extrapolated from the same encoding pattern -- check the first real
+  historical scan's result count looks sane.
 - **Perplexity** and **Parallel** have no query-level date filter in their
   APIs, so this is a best-effort natural-language instruction appended to
   the prompt/objective instead -- may be partially or fully ignored by the
   model.
-- **YouTube** isn't covered at all (it has its own, different date-filter
-  mechanism, not wired up here).
 
 Via `gh` CLI: `gh workflow run "Crawl for derivative works" --repo
 SClinton/genai-derivative-tracker -f date_from=2022-01-01 -f

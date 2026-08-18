@@ -254,8 +254,8 @@ def main():
     config["date_range"] = get_date_range()
     if config["date_range"]:
         print(f"Historical scan: date_range={config['date_range']} "
-              f"(hard filter on Google-family search, best-effort prompt hint on Perplexity/Parallel, "
-              f"not applied to YouTube -- see engines.py)")
+              f"(hard filter on Google-family search, bucket approximation on YouTube, "
+              f"best-effort prompt hint on Perplexity/Parallel -- see engines.py)")
     resource_titles = config.get("queries", [])
     excluded_domains = [d.lower() for d in config.get("excluded_domains", [])]
     enabled_engines = config.get("engines", ["serpapi"])

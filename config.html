@@ -54,10 +54,12 @@
       The <b>Run workflow</b> form on that page has two optional fields, <b>date_from</b> and
       <b>date_to</b> (YYYY-MM-DD) &mdash; a historical scan restricted to that date range instead
       of the default (today/most-recent, no restriction). Leave both blank for a normal scan.
-      This is a real filter on Google search, a best-effort prompt hint on Perplexity/Parallel
-      (they don't support a hard date filter), and not applied to YouTube at all (different,
-      not-yet-wired-up filter mechanism) &mdash; see the code comments in
-      <code>crawler/engines.py</code> for the exact per-engine behavior.
+      This is a precise custom-range filter on Google search; on YouTube (which only supports
+      fixed relative buckets, not an arbitrary range) it's approximated as the narrowest
+      "uploaded in the last week/month/year" that covers the range &mdash; and left unfiltered
+      rather than wrongly restricted if the range starts further back than a year. Perplexity and
+      Parallel get a best-effort prompt hint instead, since neither has a real date-filter field.
+      See the code comments in <code>crawler/engines.py</code> for the exact per-engine behavior.
     </p>
     <p class="subtitle" style="margin-top:10px;">Prefer the command line? <code>gh workflow run "Crawl for derivative works" --repo SClinton/genai-derivative-tracker -f date_from=2022-01-01 -f date_to=2023-12-31</code></p>
   </div>
