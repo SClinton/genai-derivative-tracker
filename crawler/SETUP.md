@@ -109,12 +109,40 @@ quotes work best. Also set `engines:` to the backends you've configured.
 
 ## Run it
 
-- Runs automatically every Monday at 13:00 UTC (edit the cron line in
-  `.github/workflows/crawl.yml` to change the schedule).
+- Runs automatically every Monday at 13:00 UTC (edit the `cron:` line in
+  `.github/workflows/crawl.yml` to change the schedule -- see the "Change
+  the schedule" card on the site's Config page for common presets to copy
+  in, and double-check any custom expression at crontab.guru before
+  pushing, since a typo just means it silently doesn't run when expected).
 - To run on demand: repo → **Actions** tab → **Crawl for derivative works**
-  → **Run workflow**.
+  → **Run workflow** (also linked from the site's Config page → "Scan
+  now").
 - Each run commits an updated `data/candidates.json` if it found anything
   new. Refresh the site to see new candidates under "Needs review."
+
+### Historical scans
+
+The **Run workflow** form (manual trigger only, not the scheduled run) has
+two optional inputs, `date_from` and `date_to` (`YYYY-MM-DD`) -- restricts
+the scan to that date range instead of the default (today/most-recent, no
+restriction). Per-engine behavior differs since not all of them support a
+real date filter:
+
+- **Google** (and the `vimeo`/`training_platforms` pseudo-engines, which
+  route through it) gets a real, hard filter via Google's
+  `tbs=cdr:1,cd_min:...,cd_max:...` custom date range param. If only one
+  side of the range is given, the other defaults to a wide-open bound
+  (2020-01-01, or today) rather than leaving the filter half-built.
+- **Perplexity** and **Parallel** have no query-level date filter in their
+  APIs, so this is a best-effort natural-language instruction appended to
+  the prompt/objective instead -- may be partially or fully ignored by the
+  model.
+- **YouTube** isn't covered at all (it has its own, different date-filter
+  mechanism, not wired up here).
+
+Via `gh` CLI: `gh workflow run "Crawl for derivative works" --repo
+SClinton/genai-derivative-tracker -f date_from=2022-01-01 -f
+date_to=2023-12-31`.
 
 ## Attribution
 
@@ -149,6 +177,8 @@ pip install -r requirements.txt
 export SERPAPI_KEY=your_key      # whichever engines you're using
 export PERPLEXITY_API_KEY=your_key
 export PARALLEL_API_KEY=your_key
+# export DATE_FROM=2022-01-01    # optional -- historical scan, see below
+# export DATE_TO=2023-12-31      # optional
 python search_and_log.py
 python attribute.py
 ```

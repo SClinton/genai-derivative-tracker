@@ -197,6 +197,27 @@ def run_search(query, engine_name, job_cfg, existing_by_id, excluded_domains,
     return new_count, dup_count, excl_count
 
 
+def get_date_range():
+    """Reads DATE_FROM/DATE_TO env vars (set from workflow_dispatch inputs
+    on a manually-triggered run -- see .github/workflows/crawl.yml; unset
+    on the regular scheduled run, which always searches for whatever
+    currently exists, no historical restriction). Returns None if neither
+    is set, so every job_cfg[.get("date_range")] check downstream stays a
+    simple truthiness check."""
+    date_from = os.environ.get("DATE_FROM", "").strip()
+    date_to = os.environ.get("DATE_TO", "").strip()
+    if not date_from and not date_to:
+        return None
+    if not re.match(r"^\d{4}-\d{2}-\d{2}$", date_from or ""):
+        date_from = ""
+    if not re.match(r"^\d{4}-\d{2}-\d{2}$", date_to or ""):
+        date_to = ""
+    if not date_from and not date_to:
+        print("  ! DATE_FROM/DATE_TO set but neither is a valid YYYY-MM-DD date -- ignoring.", file=sys.stderr)
+        return None
+    return {"from": date_from or None, "to": date_to or None}
+
+
 def run_titles_pass(pass_name, pass_cfg, config, existing_by_id, excluded_domains, totals):
     """Shared shape for video_search/training_platform_search: a curated,
     usually-shorter title list against a specific serpapi_engines override
@@ -226,6 +247,15 @@ def run_titles_pass(pass_name, pass_cfg, config, existing_by_id, excluded_domain
 
 def main():
     config = load_config()
+    # Injected once here rather than into each pass's job_cfg individually --
+    # every job_cfg downstream is built as {**config, ...}, so this single
+    # assignment reaches Pass 1, conference_search, video_search, and
+    # training_platform_search automatically.
+    config["date_range"] = get_date_range()
+    if config["date_range"]:
+        print(f"Historical scan: date_range={config['date_range']} "
+              f"(hard filter on Google-family search, best-effort prompt hint on Perplexity/Parallel, "
+              f"not applied to YouTube -- see engines.py)")
     resource_titles = config.get("queries", [])
     excluded_domains = [d.lower() for d in config.get("excluded_domains", [])]
     enabled_engines = config.get("engines", ["serpapi"])

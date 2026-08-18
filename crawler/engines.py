@@ -8,10 +8,61 @@ Engines are enabled/configured in crawler/queries.yaml under `engines:`.
 """
 
 import os
+import re
 import sys
 import time
+from datetime import datetime, timezone
 
 import requests
+
+
+# Fallback bounds when a historical date_range only specifies one side --
+# Google's custom date range (tbs=cdr:1,...) needs both cd_min and cd_max,
+# so an open-ended "from X onward" or "up to Y" still needs a concrete pair.
+# 2020-01-01 predates the OWASP GenAI Security Project's existence, so it's
+# a safe stand-in for "no real lower bound."
+_EARLIEST_FALLBACK = "2020-01-01"
+
+
+def _iso_to_us_date(iso):
+    m = re.match(r"^(\d{4})-(\d{2})-(\d{2})$", iso or "")
+    return f"{m.group(2)}/{m.group(3)}/{m.group(1)}" if m else None
+
+
+def _google_date_range_tbs(date_range):
+    """Builds Google's tbs=cdr:1,cd_min:MM/DD/YYYY,cd_max:MM/DD/YYYY param
+    from an ISO {"from": "YYYY-MM-DD"|None, "to": "YYYY-MM-DD"|None} dict.
+    Based on Google's documented custom-date-range search syntax -- not
+    verified against a live SerpAPI call in this environment (no API key
+    available); confirm the first real historical-scan run's result count
+    looks sane before relying on it."""
+    if not date_range:
+        return None
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    cd_min = _iso_to_us_date(date_range.get("from") or _EARLIEST_FALLBACK)
+    cd_max = _iso_to_us_date(date_range.get("to") or today)
+    if not cd_min or not cd_max:
+        return None
+    return f"cdr:1,cd_min:{cd_min},cd_max:{cd_max}"
+
+
+def _date_range_hint(date_range):
+    """Soft, best-effort date restriction for engines with no real
+    query-level date filter (Perplexity, Parallel) -- appended as a plain-
+    language instruction rather than enforced, so it can be ignored or
+    only partially honored by the model. Google-family search gets a real
+    hard filter instead (see _google_date_range_tbs)."""
+    if not date_range:
+        return ""
+    frm = date_range.get("from")
+    to = date_range.get("to")
+    if frm and to:
+        return f" Only include results originally published between {frm} and {to}."
+    if frm:
+        return f" Only include results originally published on or after {frm}."
+    if to:
+        return f" Only include results originally published on or before {to}."
+    return ""
 
 
 # Vimeo and the training platforms have no dedicated SerpAPI engine (unlike
@@ -72,6 +123,14 @@ def search_serpapi(query, cfg):
             params["hl"] = cfg["lang"]
         if cfg.get("country"):
             params["gl"] = cfg["country"].lower()
+        # Real query-level date filter -- only meaningful for actual Google
+        # search (also covers the vimeo/training_platforms pseudo-engines,
+        # which route through google underneath). YouTube has its own,
+        # different date-filter mechanism, not wired up here.
+        if actual_engine == "google":
+            tbs = _google_date_range_tbs(cfg.get("date_range"))
+            if tbs:
+                params["tbs"] = tbs
         resp = requests.get(endpoint, params=params, timeout=20)
         if resp.status_code != 200:
             print(f"  ! serpapi/{sub_engine} failed ({resp.status_code}) for: {query}", file=sys.stderr)
@@ -116,13 +175,14 @@ def search_perplexity(query, cfg):
     headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
     lang_label = cfg.get("lang_label", "")
     locale_hint = f" Prioritize results written in {lang_label}." if lang_label and lang_label != "English (US)" else ""
+    date_hint = _date_range_hint(cfg.get("date_range"))
     payload = {
         "model": cfg.get("perplexity_model", "sonar"),
         "messages": [
             {
                 "role": "user",
                 "content": (
-                    f"Search the web for: {query}.{locale_hint} "
+                    f"Search the web for: {query}.{locale_hint}{date_hint} "
                     "List the distinct source URLs you find that are relevant, "
                     "one per line, with a short description of each."
                 ),
@@ -173,8 +233,9 @@ def search_parallel(query, cfg):
         return []
 
     endpoint = "https://api.parallel.ai/v1/search"
+    date_hint = _date_range_hint(cfg.get("date_range"))
     payload = {
-        "objective": f"Find web pages that reuse, cite, or appear derived from: {query}",
+        "objective": f"Find web pages that reuse, cite, or appear derived from: {query}.{date_hint}",
         "search_queries": [query],
         "mode": cfg.get("parallel_mode", "basic"),
     }

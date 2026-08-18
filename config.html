@@ -36,6 +36,56 @@
   <div class="count-line" id="statusLine">Reading crawler/queries.yaml&hellip;</div>
   <div class="status-grid" id="statusGrid"></div>
 
+  <h2 class="section">Scan schedule &amp; control</h2>
+
+  <div class="upgrade-card">
+    <h3>Scan now</h3>
+    <p>
+      Triggering a scan requires calling the GitHub Actions API with a token that can write to
+      this repo &mdash; not something this page will ever hold, for the same reason it never
+      holds your search API keys (see the notice at the top). This button takes you to GitHub's
+      own Actions page instead, where <b>Run workflow</b> uses your existing GitHub login, not a
+      credential typed into a static site.
+    </p>
+    <p>
+      <a class="btn" href="https://github.com/SClinton/genai-derivative-tracker/actions/workflows/crawl.yml" target="_blank" rel="noopener">Open Actions &rarr; Run workflow</a>
+    </p>
+    <p>
+      The <b>Run workflow</b> form on that page has two optional fields, <b>date_from</b> and
+      <b>date_to</b> (YYYY-MM-DD) &mdash; a historical scan restricted to that date range instead
+      of the default (today/most-recent, no restriction). Leave both blank for a normal scan.
+      This is a real filter on Google search, a best-effort prompt hint on Perplexity/Parallel
+      (they don't support a hard date filter), and not applied to YouTube at all (different,
+      not-yet-wired-up filter mechanism) &mdash; see the code comments in
+      <code>crawler/engines.py</code> for the exact per-engine behavior.
+    </p>
+    <p class="subtitle" style="margin-top:10px;">Prefer the command line? <code>gh workflow run "Crawl for derivative works" --repo SClinton/genai-derivative-tracker -f date_from=2022-01-01 -f date_to=2023-12-31</code></p>
+  </div>
+
+  <div class="upgrade-card">
+    <h3>Change the schedule</h3>
+    <div class="count-line" id="scheduleLine">Reading .github/workflows/crawl.yml&hellip;</div>
+    <p>
+      Same reasoning as above &mdash; changing the schedule means editing and pushing a file in
+      the repo, which this page can read but not write to safely. Edit the <code>cron:</code>
+      line in <code>.github/workflows/crawl.yml</code> (cron is always UTC) and push; it takes
+      effect on the next scheduled run.
+    </p>
+    <h4>Common schedules to copy in</h4>
+    <div class="code-block"><span class="comment"># Daily at 13:00 UTC</span>
+- cron: "0 13 * * *"
+
+<span class="comment"># Twice a week -- Monday and Thursday at 13:00 UTC</span>
+- cron: "0 13 * * 1,4"
+
+<span class="comment"># Weekly on Wednesday at 09:00 UTC</span>
+- cron: "0 9 * * 3"
+
+<span class="comment"># Monthly, the 1st at 13:00 UTC</span>
+- cron: "0 13 1 * *"</div>
+    <p class="subtitle">Double-check any custom expression at <a href="https://crontab.guru" target="_blank" rel="noopener">crontab.guru</a> before pushing &mdash; a typo here just means the crawl silently doesn't run on the day you expected, GitHub won't warn you.</p>
+  </div>
+
   <h2 class="section">Upgrade paths</h2>
 
   <div class="upgrade-card">
@@ -193,6 +243,51 @@ conference_search:
     .catch(() => {
       statusLine.innerHTML = 'Could not read live status &mdash; check <a href="https://github.com/SClinton/genai-derivative-tracker/blob/main/crawler/queries.yaml" target="_blank" rel="noopener">crawler/queries.yaml</a> directly.';
       statusGrid.innerHTML = '';
+    });
+
+  // ---- Schedule card: live-parsed from the workflow's cron line ----
+  const scheduleLine = document.getElementById('scheduleLine');
+  const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+  // Best-effort cron -> plain English for the common preset shapes this
+  // page suggests below. Deliberately narrow: returns null (falls back to
+  // showing the raw cron string, never a wrong guess) for anything with
+  // ranges, steps, or other syntax it doesn't recognize -- see the tests
+  // this was verified against before shipping.
+  function describeCron(expr){
+    const parts = expr.trim().split(/\s+/);
+    if(parts.length !== 5) return null;
+    const [min, hour, dom, month, dow] = parts;
+    if(!/^\d{1,2}$/.test(min) || !/^\d{1,2}$/.test(hour)) return null;
+    const time = `${hour.padStart(2,'0')}:${min.padStart(2,'0')} UTC`;
+
+    if(dom === '*' && month === '*' && dow === '*'){
+      return `Every day at ${time}`;
+    }
+    if(dom === '*' && month === '*' && /^\d(,\d)*$/.test(dow)){
+      const days = dow.split(',').map(d => DAYS[parseInt(d, 10)]).filter(Boolean);
+      if(days.length !== dow.split(',').length) return null;
+      return `Every ${days.join(', ')} at ${time}`;
+    }
+    if(/^\d{1,2}$/.test(dom) && month === '*' && dow === '*'){
+      return `On day ${dom} of each month at ${time}`;
+    }
+    return null;
+  }
+
+  fetch('.github/workflows/crawl.yml', { cache: 'no-store' })
+    .then(res => { if(!res.ok) throw new Error('not found'); return res.text(); })
+    .then(text => {
+      const m = text.match(/-\s*cron:\s*"([^"]+)"/);
+      if(!m) throw new Error('no cron line found');
+      const raw = m[1];
+      const friendly = describeCron(raw);
+      scheduleLine.textContent = friendly
+        ? `${friendly}  (cron: ${raw})`
+        : `Custom schedule (cron: ${raw}) -- check crontab.guru for what this means.`;
+    })
+    .catch(() => {
+      scheduleLine.innerHTML = 'Could not read the live schedule &mdash; check <a href="https://github.com/SClinton/genai-derivative-tracker/blob/main/.github/workflows/crawl.yml" target="_blank" rel="noopener">.github/workflows/crawl.yml</a> directly.';
     });
 })();
 </script>
